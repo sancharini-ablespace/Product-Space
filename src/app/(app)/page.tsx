@@ -6,8 +6,8 @@ import { EmptyState } from "@/components/hub/EmptyState";
 import { ProgressBar } from "@/components/hub/ProgressBar";
 import { active, currentVersion, progress } from "@/lib/derive";
 import { ACT_TONE, T, days, fmt, rel } from "@/lib/hub";
-import { getProfile, listActivity, listFeatures, listProjects } from "@/lib/queries";
-import { requireUser } from "@/lib/session";
+import { listActivity, listFeatures, listProjects } from "@/lib/queries";
+import { requireProfile, requireUserWith } from "@/lib/session";
 
 const PROJECT_COLS = "grid-cols-[minmax(150px,1.5fr)_minmax(90px,0.9fr)_minmax(120px,1fr)_90px_64px_96px]";
 const UPCOMING_COLS = "grid-cols-[minmax(200px,1.6fr)_72px_minmax(110px,1fr)_90px]";
@@ -17,13 +17,10 @@ const cardHead = "flex items-center justify-between border-b border-hover px-4 p
 const cardTitle = "text-[13.5px] font-semibold";
 
 export default async function DashboardPage() {
-  const me = await requireUser();
-  const [profile, projects, features, activity] = await Promise.all([
-    getProfile(me.id),
-    listProjects(),
-    listFeatures({ archived: false }),
-    listActivity({ limit: 9 }),
-  ]);
+  const [me, [projects, features, activity]] = await requireUserWith(() =>
+    Promise.all([listProjects(), listFeatures({ archived: false }), listActivity({ limit: 9 })]),
+  );
+  const profile = await requireProfile();
 
   // Prototype: openF, myOpen, watching, upcoming, activeP, blockedN, dueSoon, myBlocked.
   const openF = features.filter((f) => f.status !== "Completed");

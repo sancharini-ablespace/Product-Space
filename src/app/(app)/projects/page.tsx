@@ -6,13 +6,12 @@ import { ProjectsTable, type ProjectListRow } from "@/components/projects-table"
 import { active, currentVersion, progress } from "@/lib/derive";
 import { fmt } from "@/lib/hub";
 import { listMembers, listProjects } from "@/lib/queries";
-import { requireUser } from "@/lib/session";
+import { requireUserWith } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Projects · Product Hub" };
 
 export default async function ProjectsPage() {
-  const me = await requireUser();
-  const [projects, members] = await Promise.all([listProjects(), listMembers()]);
+  const [me, [projects, members]] = await requireUserWith(() => Promise.all([listProjects(), listMembers()]));
   const activeCount = projects.filter((p) => p.status === "Active").length;
 
   const rows: ProjectListRow[] = projects.map((p) => {

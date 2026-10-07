@@ -6,12 +6,12 @@ import { PocDrawerHost } from "@/components/poc/poc-drawer";
 import { ResearchDrawerHost } from "@/components/research/research-drawer";
 import { SearchOverlay } from "@/components/search-overlay";
 import { av } from "@/lib/hub";
-import { getNavCounts, getProfile } from "@/lib/queries";
-import { requireUser } from "@/lib/session";
+import { getNavCounts } from "@/lib/queries";
+import { requireProfile, requireUserWith } from "@/lib/session";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  const user = await requireUser();
-  const [profile, counts] = await Promise.all([getProfile(user.id), getNavCounts(user.id)]);
+  const [user, counts] = await requireUserWith((uid) => getNavCounts(uid));
+  const profile = await requireProfile();
   const name = user.name ?? user.email;
   // The prototype falls back to "Member" when a person has no role title.
   return (

@@ -5,7 +5,7 @@ import type { ProjectTab, ProjectViewData } from "@/components/project/types";
 import { ACT_TONE, T, memberAv, memberName, rel } from "@/lib/hub";
 import { threadNotes } from "@/lib/note-view";
 import { getProject, listActivity, listMembers, listPocOptions } from "@/lib/queries";
-import { requireUser } from "@/lib/session";
+import { requireUserWith } from "@/lib/session";
 
 const TABS: ProjectTab[] = ["overview", "versions", "features", "activity"];
 const UUID_RE = /^[0-9a-f-]{36}$/i;
@@ -14,13 +14,9 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
   const { id } = await params;
   if (!UUID_RE.test(id)) notFound();
   const sp = await searchParams;
-  const me = await requireUser();
-  const [project, activity, members, pocOptions] = await Promise.all([
-    getProject(id),
-    listActivity({ projectId: id, limit: 500 }),
-    listMembers(),
-    listPocOptions(),
-  ]);
+  const [me, [project, activity, members, pocOptions]] = await requireUserWith(() =>
+    Promise.all([getProject(id), listActivity({ projectId: id, limit: 500 }), listMembers(), listPocOptions()]),
+  );
   if (!project) notFound();
 
   const toNotes = await threadNotes([project.notes, ...project.versions.map((v) => v.notes)]);

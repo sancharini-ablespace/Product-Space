@@ -11,7 +11,9 @@ export type PocDrawerData = {
 };
 
 export async function loadPocDrawer(id: string): Promise<PocDrawerData | null> {
-  const [poc, projects, features] = await Promise.all([getPoc(id), listProjectOptions(), listFeatures({ archived: false })]);
+  // One active-features read serves both the POC's requested features and "+ Link a feature".
+  const active = listFeatures({ archived: false });
+  const [poc, projects, features] = await Promise.all([getPoc(id, active), listProjectOptions(), active]);
   if (!poc) return null;
   return {
     poc,

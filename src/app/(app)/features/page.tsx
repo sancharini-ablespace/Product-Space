@@ -2,21 +2,22 @@
 import type { Metadata } from "next";
 import { FeaturesView } from "@/components/feature/features-view";
 import { listFeatures, listMembers, listPocOptions, listProjects, listSavedFilters, listVersionOptions } from "@/lib/queries";
-import { requireUser } from "@/lib/session";
+import { requireUserWith } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Features · Product Hub" };
 
 export default async function FeaturesPage() {
-  const me = await requireUser();
-  const [features, members, pocOptions, projects, versions, savedFilters] = await Promise.all([
-    // Archived features are left out here; they're reached from a project's Features tab.
-    listFeatures({ archived: false }),
-    listMembers(),
-    listPocOptions(),
-    listProjects(),
-    listVersionOptions(),
-    listSavedFilters(),
-  ]);
+  const [me, [features, members, pocOptions, projects, versions, savedFilters]] = await requireUserWith(() =>
+    Promise.all([
+      // Archived features are left out here; they're reached from a project's Features tab.
+      listFeatures({ archived: false }),
+      listMembers(),
+      listPocOptions(),
+      listProjects(),
+      listVersionOptions(),
+      listSavedFilters(),
+    ]),
+  );
   return (
     <FeaturesView
       features={features}

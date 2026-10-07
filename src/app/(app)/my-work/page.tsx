@@ -2,12 +2,11 @@
 import type { Metadata } from "next";
 import { MyWorkView } from "@/components/my-work-view";
 import { listFeatures } from "@/lib/queries";
-import { requireUser } from "@/lib/session";
+import { requireUserWith } from "@/lib/session";
 
 export const metadata: Metadata = { title: "My work · Product Hub" };
 
 export default async function MyWorkPage() {
-  const me = await requireUser();
-  const features = await listFeatures({ ownerId: me.id, archived: false });
+  const [me, features] = await requireUserWith((uid) => listFeatures({ ownerId: uid, archived: false }));
   return <MyWorkView features={features} meName={me.name ?? me.email} />;
 }

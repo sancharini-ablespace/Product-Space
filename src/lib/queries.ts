@@ -194,8 +194,9 @@ export type ProjectDetail = Omit<ProjectSummary, "versions"> & {
 
 /** One project with versions (confidence history + notes), notes and features. */
 export async function getProject(id: string): Promise<ProjectDetail | null> {
-  const row = unwrap(
-    await db()
+  // The project and its features load together (features are matched by project, not version ids).
+  const [res, features, archivedFeatures] = await Promise.all([
+    db()
       .from("projects")
       .select(
         `${PROJECT_LINKS},
@@ -206,14 +207,11 @@ export async function getProject(id: string): Promise<ProjectDetail | null> {
       )
       .eq("id", id)
       .maybeSingle(),
-  ) as unknown as (RawProject & { versions: VersionDetail[]; notes: NoteRow[] }) | null;
-  if (!row) return null;
-
-  const versionIds = row.versions.map((v) => v.id);
-  const [features, archivedFeatures] = await Promise.all([
-    listFeatures({ versionIds, archived: false }),
-    listFeatures({ versionIds, archived: true }),
+    listFeatures({ projectId: id, archived: false }),
+    listFeatures({ projectId: id, archived: true }),
   ]);
+  const row = unwrap(res) as unknown as (RawProject & { versions: VersionDetail[]; notes: NoteRow[] }) | null;
+  if (!row) return null;
   const newestFirst = <T extends { created_at: string }>(xs: T[]) =>
     [...xs].sort((a, b) => b.created_at.localeCompare(a.created_at));
 
@@ -234,34 +232,33 @@ export async function getProject(id: string): Promise<ProjectDetail | null> {
 export type FeatureFilter = {
   /** Only features in these versions. */
   versionIds?: string[];
+  /** Only features in this project's versions. */
+  projectId?: string;
   /** true = archived only, false = active only, undefined = both. */
   archived?: boolean;
   ownerId?: string;
   watcherId?: string;
 };
 
-async function featureIdsFor(table: "feature_owners" | "feature_watchers", userId: string) {
-  const rows = unwrap(await db().from(table).select("feature_id").eq("user_id", userId));
-  return rows.map((r) => r.feature_id as string);
-}
-
 /** Features with version/project, owners, watchers and POCs. */
 export async function listFeatures(filter: FeatureFilter = {}): Promise<FeatureRow[]> {
-  let ids: string[] | null = null;
-  if (filter.ownerId) ids = await featureIdsFor("feature_owners", filter.ownerId);
-  if (filter.watcherId) {
-    const w = await featureIdsFor("feature_watchers", filter.watcherId);
-    ids = ids ? ids.filter((x) => w.includes(x)) : w;
-  }
-  if (ids && !ids.length) return [];
   if (filter.versionIds && !filter.versionIds.length) return [];
 
-  let q = db().from("features").select(FEATURE);
-  if (ids) q = q.in("id", ids);
+  // Owner/watcher/project filters are inner-joined in the same request (one round trip).
+  // The extra `only_*` embeds only filter rows; the full owners/watchers lists are unaffected.
+  let select = FEATURE;
+  if (filter.ownerId) select += ", only_owner:feature_owners!inner(user_id)";
+  if (filter.watcherId) select += ", only_watcher:feature_watchers!inner(user_id)";
+  if (filter.projectId) select += ", only_project:versions!inner(project_id)";
+  let q = db().from("features").select(select);
+  if (filter.ownerId) q = q.eq("only_owner.user_id", filter.ownerId);
+  if (filter.watcherId) q = q.eq("only_watcher.user_id", filter.watcherId);
+  if (filter.projectId) q = q.eq("only_project.project_id", filter.projectId);
   if (filter.versionIds) q = q.in("version_id", filter.versionIds);
   if (filter.archived === true) q = q.not("archived_at", "is", null);
   if (filter.archived === false) q = q.is("archived_at", null);
-  const rows = unwrap(await q.order("created_at")) as unknown as RawFeature[];
+  const rows = unwrap(await q.order("created_at")) as unknown as (RawFeature & Record<string, unknown>)[];
+  for (const r of rows) for (const k of ["only_owner", "only_watcher", "only_project"]) delete r[k];
   return rows.map(toFeatureRow);
 }
 
@@ -269,15 +266,12 @@ export type FeatureDetail = FeatureRow & { notes: NoteRow[]; activity: ActivityR
 
 /** One feature with its notes and activity, for the feature drawer. */
 export async function getFeature(id: string): Promise<FeatureDetail | null> {
-  const row = unwrap(
-    await db()
-      .from("features")
-      .select(`${FEATURE}, notes(${NOTE})`)
-      .eq("id", id)
-      .maybeSingle(),
-  ) as unknown as (RawFeature & { notes: NoteRow[] }) | null;
+  const [res, activity] = await Promise.all([
+    db().from("features").select(`${FEATURE}, notes(${NOTE})`).eq("id", id).maybeSingle(),
+    listActivity({ featureId: id, limit: 100 }),
+  ]);
+  const row = unwrap(res) as unknown as (RawFeature & { notes: NoteRow[] }) | null;
   if (!row) return null;
-  const activity = await listActivity({ featureId: id, limit: 100 });
   return {
     ...toFeatureRow(row),
     notes: [...row.notes].sort((a, b) => b.created_at.localeCompare(a.created_at)),
@@ -293,27 +287,33 @@ export type PocRow = Poc & {
   features: FeatureRow[];
 };
 
+const POC = "*, projects:project_pocs(created_at, project:projects(id, name, description))";
+type RawPoc = Poc & { projects: Linked<"project", Pick<Project, "id" | "name" | "description">>[] };
+
+/** A POC's requested features are the active features that list it. */
+const toPocRow = (c: RawPoc, activeFeatures: FeatureRow[]): PocRow => ({
+  ...c,
+  projects: byLinkOrder(c.projects).map((x) => x.project),
+  features: activeFeatures.filter((f) => f.pocs.some((p) => p.id === c.id)),
+});
+
 /** POCs with linked projects and requested features. */
 export async function listPocs(): Promise<PocRow[]> {
   const [pocs, features] = await Promise.all([
-    unwrap(
-      await db()
-        .from("pocs")
-        .select("*, projects:project_pocs(created_at, project:projects(id, name, description))")
-        .order("created_at"),
-    ) as unknown as (Poc & { projects: Linked<"project", Pick<Project, "id" | "name" | "description">>[] })[],
+    db().from("pocs").select(POC).order("created_at"),
     listFeatures({ archived: false }),
   ]);
-  return pocs.map((c) => ({
-    ...c,
-    projects: byLinkOrder(c.projects).map((x) => x.project),
-    features: features.filter((f) => f.pocs.some((p) => p.id === c.id)),
-  }));
+  return (unwrap(pocs) as unknown as RawPoc[]).map((c) => toPocRow(c, features));
 }
 
-export async function getPoc(id: string): Promise<PocRow | null> {
-  const all = await listPocs();
-  return all.find((c) => c.id === id) ?? null;
+/** One POC. Pass the active features if the caller already loads them (the POC drawer does). */
+export async function getPoc(id: string, activeFeatures?: Promise<FeatureRow[]>): Promise<PocRow | null> {
+  const [res, features] = await Promise.all([
+    db().from("pocs").select(POC).eq("id", id).maybeSingle(),
+    activeFeatures ?? listFeatures({ archived: false }),
+  ]);
+  const c = unwrap(res) as unknown as RawPoc | null;
+  return c ? toPocRow(c, features) : null;
 }
 
 // ---------------------------------------------------------------------------

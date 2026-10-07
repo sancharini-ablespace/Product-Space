@@ -28,7 +28,7 @@ import {
   type ProjectDeleteImpact,
   type SearchIndex,
 } from "./queries";
-import { requireUser, type SessionUser } from "./session";
+import { requireUser, requireUserWith, type SessionUser } from "./session";
 import { db, unwrap } from "./supabase";
 import {
   FEATURE_STATUSES,
@@ -81,6 +81,19 @@ async function log(
 }
 
 const displayName = (u: { name: string | null; email: string }) => u.name ?? u.email;
+
+/**
+ * Runs independent lookups together. If any fail (including validation), rethrows the first
+ * failure in list order, i.e. the same error one-by-one awaits would have raised.
+ */
+async function inOrder<T extends readonly (() => unknown)[]>(
+  steps: T,
+): Promise<{ [K in keyof T]: Awaited<ReturnType<T[K]>> }> {
+  const settled = await Promise.allSettled(steps.map((step) => Promise.resolve().then(step)));
+  const failed = settled.find((r) => r.status === "rejected");
+  if (failed) throw failed.reason;
+  return settled.map((r) => (r as PromiseFulfilledResult<unknown>).value) as { [K in keyof T]: Awaited<ReturnType<T[K]>> };
+}
 
 async function getMember(id: string) {
   const u = unwrap(
@@ -150,9 +163,12 @@ export async function createProject(input: { name: string; description?: string;
     const owner = input.ownerId ? await getMember(uuid(input.ownerId, "owner")) : null;
 
     const p = unwrap(await db().from("projects").insert({ name, description }).select("id").single());
-    if (owner) unwrap(await db().from("project_owners").insert({ project_id: p.id, user_id: owner.id }));
-    unwrap(await db().from("versions").insert({ project_id: p.id, num: 1, name: "First release" }));
-    await log(me, "feature", `created project ${name}`, { projectId: p.id });
+    // These only depend on the new project, not on each other, so they're written together.
+    await Promise.all([
+      owner ? db().from("project_owners").insert({ project_id: p.id, user_id: owner.id }).then(unwrap) : null,
+      db().from("versions").insert({ project_id: p.id, num: 1, name: "First release" }).then(unwrap),
+      log(me, "feature", `created project ${name}`, { projectId: p.id }),
+    ]);
     return { id: p.id };
   });
 }
@@ -205,13 +221,16 @@ export async function setProjectLink(projectId: string, kind: "owners" | "pocs",
 
 /** Read-only: what deleting these projects would touch (for the confirmation dialog). */
 export async function getProjectDeleteImpact(ids: string[]): Promise<ProjectDeleteImpact | { error: string }> {
-  await requireUser();
-  try {
-    return await projectDeleteImpact(uuids(ids, "project"));
-  } catch (err) {
-    if (err instanceof ValidationError) return { error: err.message };
-    throw err;
-  }
+  // The account check runs alongside the read; the result is only returned once it passes.
+  const [, res] = await requireUserWith(async () => {
+    try {
+      return await projectDeleteImpact(uuids(ids, "project"));
+    } catch (err) {
+      if (err instanceof ValidationError) return { error: err.message };
+      throw err;
+    }
+  });
+  return res;
 }
 
 /**
@@ -342,9 +361,12 @@ export async function createFeature(input: {
     const description = optText(input.description, "Description");
     const priority = oneOf(input.priority ?? "Medium", PRIORITIES, "Priority");
     const stakeholders = optText(input.stakeholders, "Stakeholders", 500);
-    const version = input.versionId ? await getVersionCtx(uuid(input.versionId, "version")) : null;
-    const owner = input.ownerId ? await getMember(uuid(input.ownerId, "owner")) : null;
-    const poc = input.pocId ? await getPocCtx(uuid(input.pocId, "POC")) : null;
+    // The three lookups run together; on failure the first error in this order is reported, as before.
+    const [version, owner, poc] = await inOrder([
+      () => (input.versionId ? getVersionCtx(uuid(input.versionId, "version")) : null),
+      () => (input.ownerId ? getMember(uuid(input.ownerId, "owner")) : null),
+      () => (input.pocId ? getPocCtx(uuid(input.pocId, "POC")) : null),
+    ] as const);
 
     const f = unwrap(
       await db()
@@ -353,13 +375,16 @@ export async function createFeature(input: {
         .select("id")
         .single(),
     );
-    if (owner) unwrap(await db().from("feature_owners").insert({ feature_id: f.id, user_id: owner.id }));
-    if (poc) unwrap(await db().from("feature_pocs").insert({ feature_id: f.id, poc_id: poc.id }));
-    await log(me, "feature", `added feature ${name}`, {
-      projectId: version?.project_id,
-      versionId: version?.id,
-      featureId: f.id,
-    });
+    // These only depend on the new feature, not on each other, so they're written together.
+    await Promise.all([
+      owner ? db().from("feature_owners").insert({ feature_id: f.id, user_id: owner.id }).then(unwrap) : null,
+      poc ? db().from("feature_pocs").insert({ feature_id: f.id, poc_id: poc.id }).then(unwrap) : null,
+      log(me, "feature", `added feature ${name}`, {
+        projectId: version?.project_id,
+        versionId: version?.id,
+        featureId: f.id,
+      }),
+    ]);
     return { id: f.id };
   });
 }
@@ -461,59 +486,64 @@ export async function setFeaturesArchived(ids: string[], archived: boolean) {
 
 /** Read-only: options the create drawer's selects need. */
 export async function getCreateOptions() {
-  await requireUser();
-  const [members, projects, versions, pocs] = await Promise.all([
-    listMembers(),
-    listProjectOptions(),
-    listVersionOptions(),
-    listPocOptions(),
-  ]);
+  const [, [members, projects, versions, pocs]] = await requireUserWith(() =>
+    Promise.all([listMembers(), listProjectOptions(), listVersionOptions(), listPocOptions()]),
+  );
   return { members, projects, versions, pocs };
 }
 
 /** Read-only: everything the ⌘K search looks through. */
 export async function getSearchIndex(): Promise<SearchIndex> {
-  await requireUser();
-  return searchIndex();
+  const [, index] = await requireUserWith(() => searchIndex());
+  return index;
 }
 
 /** Read-only: research drawer contents. */
 export async function getResearchDrawer(id: string): Promise<ResearchDrawerData | null> {
-  await requireUser();
-  try {
-    return await loadResearchDrawer(uuid(id, "research item"));
-  } catch (err) {
-    if (err instanceof ValidationError) return null;
-    throw err;
-  }
+  // The account check runs alongside the read; the result is only returned once it passes.
+  const [, res] = await requireUserWith(async () => {
+    try {
+      return await loadResearchDrawer(uuid(id, "research item"));
+    } catch (err) {
+      if (err instanceof ValidationError) return null;
+      throw err;
+    }
+  });
+  return res;
 }
 
 /** Read-only: POC drawer contents. */
 export async function getPocDrawer(id: string): Promise<PocDrawerData | null> {
-  await requireUser();
-  try {
-    return await loadPocDrawer(uuid(id, "POC"));
-  } catch (err) {
-    if (err instanceof ValidationError) return null;
-    throw err;
-  }
+  // The account check runs alongside the read; the result is only returned once it passes.
+  const [, res] = await requireUserWith(async () => {
+    try {
+      return await loadPocDrawer(uuid(id, "POC"));
+    } catch (err) {
+      if (err instanceof ValidationError) return null;
+      throw err;
+    }
+  });
+  return res;
 }
 
 /** Read-only: feature drawer contents. */
 export async function getFeatureDrawer(id: string): Promise<FeatureDrawerData | null> {
-  await requireUser();
-  try {
-    return await loadFeatureDrawer(uuid(id, "feature"));
-  } catch (err) {
-    if (err instanceof ValidationError) return null;
-    throw err;
-  }
+  // The account check runs alongside the read; the result is only returned once it passes.
+  const [, res] = await requireUserWith(async () => {
+    try {
+      return await loadFeatureDrawer(uuid(id, "feature"));
+    } catch (err) {
+      if (err instanceof ValidationError) return null;
+      throw err;
+    }
+  });
+  return res;
 }
 
 /** Read-only: notes that deleting these features would remove (for the confirmation dialog). */
 export async function getFeatureNoteCount(ids: string[]): Promise<number> {
-  await requireUser();
-  return featureNoteCount(uuids(ids, "feature"));
+  const [, n] = await requireUserWith(async () => featureNoteCount(uuids(ids, "feature")));
+  return n;
 }
 
 /** Deletes features with their notes, attachments and links. Activity entries stay, unlinked. */
