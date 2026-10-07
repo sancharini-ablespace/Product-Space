@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<div style="font-family:var(--font-sans)">
+<div onClick="{{ onCancel }}" style="position:fixed;inset:0;background:var(--scrim);z-index:60"></div>
+<div role="dialog" aria-modal="true" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:61;width:min(460px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 48px rgba(28,27,26,0.2),0 2px 8px rgba(28,27,26,0.08);display:flex;flex-direction:column">
+  <div style="padding:18px 20px 6px">
+    <div style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);text-wrap:pretty">{{ title }}</div>
+    <div style="font-size:var(--fs-base);color:var(--muted);margin-top:4px">{{ message }}</div>
+  </div>
+  <div style="display:flex;flex-direction:column;padding:6px 20px 4px">
+    <sc-for list="{{ impact }}" as="im" hint-placeholder-count="3">
+      <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-subtle);font-size:var(--fs-base);line-height:1.45"><span style="width:6px;height:6px;border-radius:50%;background:{{ im.dot }};margin-top:7px;flex-shrink:0"></span><div style="min-width:0"><div style="color:var(--ink)">{{ im.text }}</div><sc-if value="{{ im.hasSub }}" hint-placeholder-val="{{ false }}"><div style="font-size:var(--fs-md);color:var(--muted);margin-top:1px;text-wrap:pretty">{{ im.sub }}</div></sc-if></div></div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ hasCheck }}" hint-placeholder-val="{{ false }}">
+    <label style="display:flex;align-items:center;gap:8px;margin:8px 20px 0;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface-sunken);font-size:var(--fs-base);color:var(--ink);cursor:pointer"><input type="checkbox" checked="{{ checked }}" onChange="{{ onCheck }}" style="width:15px;height:15px;margin:0;accent-color:var(--tone-red-fg);cursor:pointer"><span>{{ checkLabel }}</span></label>
+  </sc-if>
+  <div style="display:flex;justify-content:flex-end;gap:8px;padding:16px 20px">
+    <dc-import name="Button" label="Cancel" variant="secondary" size="sm" on-click="{{ onCancel }}" hint-size="auto,28px"></dc-import>
+    <dc-import name="Button" label="{{ confirmLabel }}" variant="danger" size="sm" on-click="{{ onConfirm }}" hint-size="auto,28px"></dc-import>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:520,&quot;height&quot;:420},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Delete “Worksheets”?&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;message&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;This can't be undone. Here's everywhere it will be affected:&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;impact&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{text:string,sub?:string,tone?:'red'|'amber'|'gray'}[]&quot;},&quot;checkLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;checked&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;confirmLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Delete&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onCheck&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(e:Event)=&gt;void&quot;},&quot;onConfirm&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;},&quot;onCancel&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;}}">
+const DOT={red:'var(--tone-red-fg)',amber:'var(--tone-amber-fg)',gray:'var(--faint)'};
+class Component extends DCLogic {
+  componentDidMount(){this._k=e=>{if(e.key==='Escape'&&this.props.onCancel)this.props.onCancel()};window.addEventListener('keydown',this._k)}
+  componentWillUnmount(){window.removeEventListener('keydown',this._k)}
+  renderVals(){
+    const p=this.props;
+    const impact=(p.impact||[{text:'2 versions deleted',sub:'V1 — Foundation, V2 — Sharing',tone:'red'},{text:'5 features kept and moved to “No project”',tone:'amber'},{text:'Unlinked from 1 research item'}])
+      .map(r=>({text:r.text,sub:r.sub||'',hasSub:!!r.sub,dot:r.dot||DOT[r.tone]||DOT.gray}));
+    return {title:p.title??'Delete “Worksheets”?',message:p.message??"This can't be undone. Here's everywhere it will be affected:",impact,
+      hasCheck:!!p.checkLabel,checkLabel:p.checkLabel||'',checked:!!p.checked,onCheck:p.onCheck,
+      confirmLabel:p.confirmLabel||'Delete',onConfirm:p.onConfirm,onCancel:p.onCancel};
+  }
+}
+</script>
+</body>
+</html>

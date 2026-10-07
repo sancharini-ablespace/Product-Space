@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:{{ pad }};font-family:var(--font-sans);background:{{ bg }};border:{{ border }};border-radius:var(--r-lg)">
+  <sc-if value="{{ hasIcon }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ tile }};height:{{ tile }};margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface-sunken);color:var(--faint);display:flex;align-items:center;justify-content:center">{{ iconEl }}</div>
+  </sc-if>
+  <div style="font-size:{{ titleSize }};font-weight:600;color:var(--ink);letter-spacing:-0.005em;text-wrap:balance">{{ title }}</div>
+  <sc-if value="{{ hasBody }}" hint-placeholder-val="{{ true }}"><div style="max-width:380px;font-size:var(--fs-base);line-height:1.5;color:var(--muted);text-wrap:pretty">{{ body }}</div></sc-if>
+  <sc-if value="{{ hasActions }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px">
+      <sc-if value="{{ hasSecondary }}" hint-placeholder-val="{{ false }}"><dc-import name="Button" label="{{ secondaryLabel }}" variant="secondary" on-click="{{ onSecondary }}" hint-size="auto,30px"></dc-import></sc-if>
+      <sc-if value="{{ hasPrimary }}" hint-placeholder-val="{{ false }}"><dc-import name="Button" label="{{ actionLabel }}" variant="{{ actionVariant }}" on-click="{{ onAction }}" hint-size="auto,30px"></dc-import></sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:520,&quot;height&quot;:300},&quot;icon&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;folder&quot;,&quot;layers&quot;,&quot;list&quot;,&quot;eye&quot;,&quot;user&quot;,&quot;users&quot;,&quot;search&quot;,&quot;flask&quot;,&quot;pulse&quot;,&quot;flag&quot;,&quot;filter&quot;,&quot;&quot;],&quot;default&quot;:&quot;folder&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;No projects yet&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;body&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Projects group versions and features. Create one to start planning.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;md&quot;,&quot;sm&quot;],&quot;default&quot;:&quot;md&quot;,&quot;tsType&quot;:&quot;'md'|'sm'&quot;},&quot;bordered&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;actionLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;+ New project&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;actionVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;primary&quot;,&quot;secondary&quot;],&quot;default&quot;:&quot;primary&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onAction&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;},&quot;secondaryLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onSecondary&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;}}">
+const P={
+  folder:'M2.5 5.5a1 1 0 0 1 1-1h4l1.5 1.5h7.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1z',
+  layers:'M10 3l7 4-7 4-7-4zM3 11l7 4 7-4',
+  list:'M7 5.5h9M7 10h9M7 14.5h9M3.5 5.5h.01M3.5 10h.01M3.5 14.5h.01',
+  eye:'M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10zM10 12.3a2.3 2.3 0 1 0 0-4.6 2.3 2.3 0 0 0 0 4.6z',
+  user:'M10 10a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM3.8 16.5c.9-2.7 3.3-4.2 6.2-4.2s5.3 1.5 6.2 4.2',
+  users:'M7.5 9.5a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6zM2.5 16c.7-2.4 2.6-3.7 5-3.7s4.3 1.3 5 3.7M13 4.2a2.6 2.6 0 0 1 0 5M14.5 12.6c1.5.5 2.5 1.6 3 3.4',
+  search:'M9 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM17 17l-3.6-3.6',
+  flask:'M8 2.5h4M8.5 2.5v5L4 15.5a1 1 0 0 0 .9 1.5h10.2a1 1 0 0 0 .9-1.5L11.5 7.5v-5M6 12.5h8',
+  pulse:'M2.5 10h3l2-5 3.5 10 2-5h4.5',
+  flag:'M4.5 17V3.5M4.5 4h9.5l-2 3.5 2 3.5H4.5',
+  filter:'M3 5h14M5.5 10h9M8 15h4'
+};
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props,h=React.createElement,size=p.size||'md',sm=size==='sm',ic=p.icon??'folder',d=P[ic];
+    const iconEl=d?h('svg',{width:sm?16:20,height:sm?16:20,viewBox:'0 0 20 20',fill:'none',stroke:'currentColor',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'},h('path',{d})):null;
+    const hasPrimary=!!p.actionLabel,hasSecondary=!!p.secondaryLabel;
+    return {title:p.title??'No projects yet',body:p.body??'Projects group versions and features. Create one to start planning.',hasBody:!!(p.body??true),
+      hasIcon:!!d,iconEl,tile:sm?'32px':'40px',titleSize:sm?'var(--fs-base)':'var(--fs-xl)',
+      pad:sm?'24px 16px':'56px 24px',bg:p.bordered?'var(--surface)':'transparent',border:p.bordered?'1px solid var(--border)':'0',
+      hasActions:hasPrimary||hasSecondary,hasPrimary,hasSecondary,actionLabel:p.actionLabel||'',actionVariant:p.actionVariant||'primary',onAction:p.onAction,
+      secondaryLabel:p.secondaryLabel||'',onSecondary:p.onSecondary};
+  }
+}
+</script>
+</body>
+</html>

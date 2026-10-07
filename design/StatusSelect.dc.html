@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<span onClick="{{ stop }}" style="position:relative;display:inline-flex;align-items:center">
+<sc-if value="{{ isFeature }}" hint-placeholder-val="{{ true }}"><select value="{{ value }}" onChange="{{ onChange }}" style="appearance:none;-webkit-appearance:none;border:0;border-radius:var(--r-xs);padding:3px 20px 3px 8px;font-size:var(--fs-sm);font-weight:500;cursor:pointer;outline:none;font-family:var(--font-sans);background:{{ bg }};color:{{ fg }}"><option value="Planned">Planned</option><option value="In Progress">In Progress</option><option value="Blocked">Blocked</option><option value="Completed">Completed</option></select></sc-if>
+<sc-if value="{{ isVersion }}" hint-placeholder-val="{{ false }}"><select value="{{ value }}" onChange="{{ onChange }}" style="appearance:none;-webkit-appearance:none;border:0;border-radius:var(--r-xs);padding:3px 20px 3px 8px;font-size:var(--fs-sm);font-weight:500;cursor:pointer;outline:none;font-family:var(--font-sans);background:{{ bg }};color:{{ fg }}"><option value="Planned">Planned</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></sc-if>
+<sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}"><select value="{{ value }}" onChange="{{ onChange }}" style="appearance:none;-webkit-appearance:none;border:0;border-radius:var(--r-xs);padding:3px 20px 3px 8px;font-size:var(--fs-sm);font-weight:500;cursor:pointer;outline:none;font-family:var(--font-sans);background:{{ bg }};color:{{ fg }}"><option value="Planned">Planned</option><option value="Active">Active</option><option value="Completed">Completed</option></select></sc-if>
+<span style="position:absolute;right:0;top:0;bottom:0;width:20px;pointer-events:none;color:{{ fg }}"><svg width="8" height="5" viewBox="0 0 10 6" style="position:absolute;right:7px;top:50%;margin-top:-2.5px;pointer-events:none;color:currentColor"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:140,&quot;height&quot;:40},&quot;value&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Planned&quot;,&quot;In Progress&quot;,&quot;Blocked&quot;,&quot;Completed&quot;,&quot;Active&quot;],&quot;default&quot;:&quot;In Progress&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;feature&quot;,&quot;version&quot;,&quot;project&quot;],&quot;default&quot;:&quot;feature&quot;,&quot;tsType&quot;:&quot;'feature'|'version'|'project'&quot;},&quot;onChange&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(e:Event)=&gt;void&quot;}}">
+const TONE={Planned:'gray','In Progress':'blue',Active:'blue',Blocked:'red',Completed:'green'};
+class Component extends DCLogic {
+  state={local:null};
+  renderVals(){
+    const k=this.props.kind||'feature',v=this.props.value??this.state.local??'Planned',t=TONE[v]||'gray';
+    return {value:v,onChange:this.props.onChange||(e=>this.setState({local:e.target.value})),stop:e=>e.stopPropagation(),
+      isFeature:k==='feature',isVersion:k==='version',isProject:k==='project',bg:`var(--tone-${t}-bg)`,fg:`var(--tone-${t}-fg)`};
+  }
+}
+</script>
+</body>
+</html>

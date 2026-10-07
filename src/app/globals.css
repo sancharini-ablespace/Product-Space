@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Product Hub design tokens — copied from design/tokens.css. Edit here, every screen and component updates. */
+:root{
+  /* Verbatim from tokens.css. next/font (layout.tsx) self-hosts Geist under the family name "Geist". */
+  --font-sans:'Geist',system-ui,-apple-system,sans-serif;
+
+  /* Neutrals */
+  --bg:#f7f7f5;
+  --surface:#ffffff;
+  --surface-sunken:#fbfbfa;
+  --surface-hover:#fafaf7;
+  --surface-muted:#f4f4f1;
+  --hover:#efeee9;
+  --selected:#ecebe7;
+  --border:#e6e5e1;
+  --border-strong:#e0dfdb;
+  --border-subtle:#f1f0ec;
+  --border-hover:#b9b7b1;
+  --ink:#1c1b1a;
+  --ink-2:#3a3935;
+  --ink-3:#55534e;
+  --muted:#6e6c66;
+  --faint:#8a8882;
+  --fainter:#9d9a93;
+  --disabled:#c4c2bc;
+
+  /* Primary action = ink */
+  --primary:#1c1b1a;
+  --primary-hover:#3a3935;
+  --on-primary:#ffffff;
+
+  /* Semantic tones (status, confidence, priority) */
+  --tone-gray-bg:#efeee9;  --tone-gray-fg:#5d5b56;  --tone-gray-dot:#aaa79f;
+  --tone-blue-bg:oklch(0.955 0.03 250);  --tone-blue-fg:oklch(0.46 0.12 250);  --tone-blue-dot:oklch(0.65 0.14 250);
+  --tone-green-bg:oklch(0.955 0.03 150); --tone-green-fg:oklch(0.46 0.12 150); --tone-green-dot:oklch(0.65 0.14 150);
+  --tone-amber-bg:oklch(0.955 0.03 65);  --tone-amber-fg:oklch(0.46 0.12 65);  --tone-amber-dot:oklch(0.65 0.14 65);
+  --tone-red-bg:oklch(0.955 0.03 25);    --tone-red-fg:oklch(0.46 0.12 25);    --tone-red-dot:oklch(0.65 0.14 25);
+  --danger:oklch(0.55 0.17 25);
+  --danger-hover:oklch(0.5 0.17 25);
+  --focus:oklch(0.6 0.12 250);
+
+  /* Radius */
+  --r-xs:4px; --r-sm:5px; --r-md:6px; --r-lg:8px; --r-xl:10px; --r-pill:999px;
+
+  /* Type scale */
+  --fs-xs:11.5px; --fs-sm:12px; --fs-md:12.5px; --fs-base:13px; --fs-lg:13.5px; --fs-xl:15px; --fs-h2:19px; --fs-h1:20px; --fs-display:22px;
+
+  /* Elevation */
+  --shadow-pop:0 10px 28px rgba(28,27,26,0.14);
+  --shadow-drawer:-12px 0 32px rgba(28,27,26,0.08);
+  --scrim:rgba(28,27,26,0.14);
+}
+/* Base element styles from tokens.css, layered so Tailwind utilities can override them per element. */
+@layer base{
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:13px;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,select,input,textarea{font:inherit;color:inherit}
+a{color:var(--ink)}a:hover{color:var(--ink-3)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+/* tokens.css sets no line-height, so the prototype renders with the browser default; undo preflight's 1.5. */
+html{line-height:normal}
 }
 
+/* Tailwind utilities mapped onto the tokens (bg-surface, text-faint, rounded-md, text-base, shadow-pop …). */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* The root font size is 13px (tokens.css), so pin Tailwind's spacing unit to px rather than rem. */
+  --spacing: 4px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-muted: var(--surface-muted);
+  --color-hover: var(--hover);
+  --color-selected: var(--selected);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-hover: var(--border-hover);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-fainter: var(--fainter);
+  --color-disabled: var(--disabled);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-focus: var(--focus);
+  --color-scrim: var(--scrim);
+  --color-tone-gray-bg: var(--tone-gray-bg);
+  --color-tone-gray-fg: var(--tone-gray-fg);
+  --color-tone-gray-dot: var(--tone-gray-dot);
+  --color-tone-blue-bg: var(--tone-blue-bg);
+  --color-tone-blue-fg: var(--tone-blue-fg);
+  --color-tone-blue-dot: var(--tone-blue-dot);
+  --color-tone-green-bg: var(--tone-green-bg);
+  --color-tone-green-fg: var(--tone-green-fg);
+  --color-tone-green-dot: var(--tone-green-dot);
+  --color-tone-amber-bg: var(--tone-amber-bg);
+  --color-tone-amber-fg: var(--tone-amber-fg);
+  --color-tone-amber-dot: var(--tone-amber-dot);
+  --color-tone-red-bg: var(--tone-red-bg);
+  --color-tone-red-fg: var(--tone-red-fg);
+  --color-tone-red-dot: var(--tone-red-dot);
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --radius-*: initial;
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-pill: var(--r-pill);
+
+  --text-*: initial;
+  --text-xs: var(--fs-xs);
+  --text-sm: var(--fs-sm);
+  --text-md: var(--fs-md);
+  --text-base: var(--fs-base);
+  --text-lg: var(--fs-lg);
+  --text-xl: var(--fs-xl);
+  --text-h2: var(--fs-h2);
+  --text-h1: var(--fs-h1);
+  --text-display: var(--fs-display);
+
+  --shadow-pop: var(--shadow-pop);
+  --shadow-drawer: var(--shadow-drawer);
 }

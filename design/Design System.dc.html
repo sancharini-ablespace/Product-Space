@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+</helmet>
+<div style="max-width:1120px;padding:32px 40px 64px;display:flex;flex-direction:column;gap:36px">
+  <div>
+    <div style="font-size:var(--fs-md);color:var(--faint)">Product Hub</div>
+    <h1 style="margin:4px 0 6px;font-size:var(--fs-display);font-weight:600;letter-spacing:-0.02em">Design system</h1>
+    <div style="font-size:var(--fs-lg);color:var(--muted);max-width:680px;line-height:1.5;text-wrap:pretty">Tokens live in <span style="font-weight:600;color:var(--ink)">tokens.css</span>; components are separate files the dashboard imports. Change either and every screen that uses it updates.</div>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:var(--fs-xs);font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:0.05em">Neutrals</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+      <sc-for list="{{ neutrals }}" as="c" hint-placeholder-count="12">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden"><div style="height:44px;background:{{ c.css }};border-bottom:1px solid var(--border-subtle)"></div><div style="padding:8px 10px"><div style="font-size:var(--fs-md);font-weight:500">{{ c.name }}</div><div style="font-size:var(--fs-xs);color:var(--faint)">{{ c.use }}</div></div></div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:var(--fs-xs);font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:0.05em">Semantic tones — status, confidence, priority</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+      <sc-for list="{{ tones }}" as="t" hint-placeholder-count="5">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:6px"><span style="width:28px;height:28px;border-radius:var(--r-md);background:{{ t.bg }};border:1px solid var(--border-subtle)"></span><span style="width:28px;height:28px;border-radius:var(--r-md);background:{{ t.dot }}"></span><span style="width:28px;height:28px;border-radius:var(--r-md);background:{{ t.fg }}"></span></div>
+          <div style="font-size:var(--fs-md);font-weight:500">--tone-{{ t.name }}-*</div>
+          <div style="font-size:var(--fs-xs);color:var(--faint)">{{ t.use }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-wrap:wrap;gap:24px">
+    <div style="flex:1 1 420px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:var(--fs-xs);font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:0.05em">Type — Geist</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:6px 16px">
+        <sc-for list="{{ typeScale }}" as="ty" hint-placeholder-count="7">
+          <div style="display:flex;align-items:baseline;gap:16px;padding:9px 0;border-bottom:1px solid var(--border-subtle)"><span style="width:92px;flex-shrink:0;font-size:var(--fs-xs);color:var(--faint)">{{ ty.token }}</span><span style="font-size:{{ ty.size }};font-weight:{{ ty.weight }};letter-spacing:{{ ty.ls }}">{{ ty.sample }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="flex:1 1 300px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:var(--fs-xs);font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:0.05em">Radius &amp; elevation</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <sc-for list="{{ radii }}" as="r" hint-placeholder-count="5"><div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="width:56px;height:56px;background:var(--surface);border:1px solid var(--border-strong);border-radius:{{ r.css }}"></span><span style="font-size:var(--fs-xs);color:var(--faint)">{{ r.name }}</span></div></sc-for>
+      </div>
+      <div style="display:flex;gap:14px;margin-top:8px">
+        <div style="flex:1;height:64px;background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);display:flex;align-items:flex-end;padding:8px;font-size:var(--fs-xs);color:var(--faint)">--shadow-pop</div>
+        <div style="flex:1;height:64px;background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-drawer);display:flex;align-items:flex-end;padding:8px;font-size:var(--fs-xs);color:var(--faint)">--shadow-drawer</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:var(--fs-xs);font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:0.05em">Components</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Button</div><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><dc-import name="Button" label="+ New feature" variant="primary" hint-size="110px,30px"></dc-import><dc-import name="Button" label="Cancel" variant="secondary" hint-size="70px,30px"></dc-import><dc-import name="Button" label="View all" variant="ghost" size="sm" hint-size="70px,26px"></dc-import><dc-import name="Button" label="Delete" variant="danger" size="sm" hint-size="60px,26px"></dc-import><dc-import name="Button" label="Disabled" variant="primary" disabled="{{ true }}" hint-size="80px,30px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">Button.dc.html · variant, size, disabled, on-click</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Status</div><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><dc-import name="StatusPill" value="Planned" hint-size="80px,20px"></dc-import><dc-import name="StatusPill" value="In Progress" hint-size="96px,20px"></dc-import><dc-import name="StatusPill" value="Blocked" hint-size="80px,20px"></dc-import><dc-import name="StatusPill" value="Completed" hint-size="96px,20px"></dc-import></div><div style="display:flex;gap:8px;align-items:center"><dc-import name="StatusSelect" value="In Progress" kind="feature" hint-size="112px,24px"></dc-import><dc-import name="StatusSelect" value="Planned" kind="version" hint-size="100px,24px"></dc-import><dc-import name="StatusSelect" value="Active" kind="project" hint-size="90px,24px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">StatusPill (read-only) · StatusSelect (kind: feature / version / project)</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Priority &amp; people</div><div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><dc-import name="PrioritySelect" value="High" hint-size="60px,24px"></dc-import><dc-import name="PrioritySelect" value="Medium" hint-size="72px,24px"></dc-import><dc-import name="PrioritySelect" value="Low" hint-size="52px,24px"></dc-import></div><div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><dc-import name="PersonSelect" value="Sancharini" hint-size="140px,24px"></dc-import><dc-import name="AvatarStack" people="{{ sampleStack }}" hint-size="90px,22px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">PrioritySelect · PersonSelect · Avatar · AvatarStack</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Progress &amp; confidence</div><div style="display:flex;flex-direction:column;gap:8px"><dc-import name="ProgressBar" value="25%" hint-size="140px,16px"></dc-import><dc-import name="ProgressBar" value="68%" hint-size="140px,16px"></dc-import></div><div style="display:flex;gap:16px;align-items:center"><dc-import name="Confidence" value="80" hint-size="50px,18px"></dc-import><dc-import name="Confidence" value="60" hint-size="50px,18px"></dc-import><dc-import name="Confidence" value="40" hint-size="50px,18px"></dc-import><dc-import name="MoreButton" hint-size="26px,26px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">Progress = work done (neutral). Confidence = likelihood of shipping (toned by thresholds).</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Tabs</div><dc-import name="Tabs" hint-size="100%,38px"></dc-import><div style="font-size:var(--fs-xs);color:var(--faint)">Tabs.dc.html · items [{label, count, active, go}]</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Note thread</div><dc-import name="NoteThread" hint-size="100%,110px"></dc-import><div style="font-size:var(--fs-xs);color:var(--faint)">Used on projects, versions and features</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Select</div><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><dc-import name="Select" hint-size="140px,34px"></dc-import><dc-import name="Select" size="sm" variant="active" hint-size="120px,30px"></dc-import><dc-import name="Select" size="sm" variant="dashed" hint-size="140px,30px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">Select.dc.html · value, options [{v,l}], size md/sm, variant default/active/dashed, block, on-change</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">People button</div><div style="display:flex;gap:12px;align-items:center"><dc-import name="PeopleButton" people="{{ sampleStack }}" label="" hint-size="80px,28px"></dc-import><dc-import name="PeopleButton" people="{{ noPeople }}" label="Add owner" hint-size="100px,28px"></dc-import><dc-import name="AddChip" label="+ Add owner" hint-size="100px,26px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">PeopleButton · people[], max, label, on-click (opens picker) · AddChip · label, on-click</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Selection bar</div><div style="position:relative;height:64px;transform:translateZ(0);overflow:hidden;border-radius:var(--r-md);background:var(--surface-sunken)"><dc-import name="SelectionBar" hint-size="100%,56px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">SelectionBar.dc.html · floats bottom-centre while rows are selected</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:12px"><div style="font-size:var(--fs-md);font-weight:600">Confirm dialog</div><div style="position:relative;height:340px;transform:translateZ(0);overflow:hidden;border-radius:var(--r-md);background:var(--bg)"><dc-import name="ConfirmDialog" hint-size="100%,340px"></dc-import></div><div style="font-size:var(--fs-xs);color:var(--faint)">ConfirmDialog.dc.html · title, impact [{text, sub, tone}], check-label, confirm-label — used for every delete</div></div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const av=(n,h)=>({i:n[0],bg:`oklch(0.92 0.04 ${h})`,fg:`oklch(0.42 0.09 ${h})`,name:n});
+    return {
+      neutrals:[['--bg','Page background'],['--surface','Cards, drawers'],['--surface-sunken','Table headers, sidebar'],['--hover','Hover fills'],['--selected','Active nav'],['--border','Card borders'],['--border-strong','Inputs'],['--border-subtle','Row dividers'],['--ink','Primary text, primary action'],['--ink-3','Secondary text'],['--muted','Labels, ghost buttons'],['--faint','Meta, captions']].map(([name,use])=>({name,use,css:`var(${name})`})),
+      tones:[['gray','Planned, Low priority'],['blue','In Progress, Active'],['green','Completed, confidence ≥ high'],['amber','Medium priority, confidence mid'],['red','Blocked, High priority, low confidence']].map(([name,use])=>({name,use,bg:`var(--tone-${name}-bg)`,fg:`var(--tone-${name}-fg)`,dot:`var(--tone-${name}-dot)`})),
+      typeScale:[['--fs-display','22px','Worksheets',600,'-0.02em'],['--fs-h1','20px','Dashboard',600,'-0.015em'],['--fs-h2','19px','AI Worksheet Generator',600,'-0.015em'],['--fs-xl','15px','Version 1 — Worksheet Foundation',600,'0'],['--fs-lg','13.5px','Section titles and card headers',600,'0'],['--fs-base','13px','Body copy and table cells',400,'0'],['--fs-sm','12px','Meta, table headers, pills',500,'0'],['--fs-xs','11.5px','SECTION LABELS',600,'0.05em']].map(([token,size,sample,weight,ls])=>({token,size:`var(${token})`,sample,weight,ls})),
+      radii:['--r-xs','--r-sm','--r-md','--r-lg','--r-xl'].map(n=>({name:n,css:`var(${n})`})),
+      sampleStack:[av('Sancharini',120),av('Nikhil',40),av('Priya',300)],noPeople:[],
+    };
+  }
+}
+</script>
+</body>
+</html>

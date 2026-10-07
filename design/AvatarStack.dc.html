@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<span style="display:flex;align-items:center;justify-content:{{ justify }}">
+  <sc-for list="{{ items }}" as="it" hint-placeholder-count="2"><dc-import name="Avatar" av="{{ it.av }}" size="22" ring="{{ true }}" overlap="{{ it.overlap }}" square="{{ it.square }}" title="{{ it.name }}" hint-size="22px,22px"></dc-import></sc-for>
+  <span style="font-size:var(--fs-sm);color:var(--faint);margin-left:4px">{{ more }}</span>
+</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:140,&quot;height&quot;:40},&quot;people&quot;:{&quot;editor&quot;:null,&quot;default&quot;:[],&quot;tsType&quot;:&quot;Array&lt;{i:string,bg:string,fg:string,name:string}&gt;&quot;},&quot;max&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:4,&quot;min&quot;:1,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;},&quot;align&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;start&quot;,&quot;end&quot;],&quot;default&quot;:&quot;start&quot;,&quot;tsType&quot;:&quot;'start'|'end'&quot;}}">
+class Component extends DCLogic {
+  renderVals(){
+    const list=this.props.people||[],max=+(this.props.max??4);
+    return {items:list.slice(0,max).map((x,i)=>({av:x,name:x.name,overlap:i>0,square:!!x.square})),more:list.length>max?`+${list.length-max}`:list.length?'':(this.props.empty??'—'),justify:this.props.align==='end'?'flex-end':'flex-start'};
+  }
+}
+</script>
+</body>
+</html>

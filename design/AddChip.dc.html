@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<button onClick="{{ onClick }}" title="{{ title }}" style="height:26px;padding:0 10px;border:1px dashed var(--border-strong);border-radius:13px;background:var(--surface);color:var(--muted);font-family:var(--font-sans);font-size:var(--fs-md);cursor:pointer;white-space:nowrap" style-hover="border-color:var(--border-hover);color:var(--ink)">{{ label }}</button>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:140,&quot;height&quot;:40},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;+ Add owner&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onClick&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(e:Event)=&gt;void&quot;}}">
+class Component extends DCLogic {
+  renderVals(){const p=this.props;return {label:p.label??'+ Add',title:p.title||'',onClick:p.onClick}}
+}
+</script>
+</body>
+</html>

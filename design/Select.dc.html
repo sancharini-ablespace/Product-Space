@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<span onClick="{{ stop }}" style="position:relative;display:{{ disp }};width:{{ width }};max-width:{{ maxWidth }};min-width:0;align-items:center">
+  <select value="{{ value }}" onChange="{{ onChange }}" title="{{ title }}" style="appearance:none;-webkit-appearance:none;width:100%;min-width:0;height:{{ h }};padding:0 28px 0 10px;border:1px {{ borderStyle }} {{ borderColor }};border-radius:var(--r-md);background:{{ bg }};font-family:var(--font-sans);font-size:{{ fs }};font-weight:{{ fw }};color:{{ fg }};cursor:pointer;outline:none;text-overflow:ellipsis" style-hover="border-color:var(--border-hover)"><sc-for list="{{ options }}" as="o" hint-placeholder-count="2"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+  <svg width="10" height="6" viewBox="0 0 10 6" style="position:absolute;right:11px;top:50%;margin-top:-3px;pointer-events:none;color:var(--faint)"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:220,&quot;height&quot;:50},&quot;value&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;options&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{v:string,l:string}[]&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;md&quot;,&quot;sm&quot;],&quot;default&quot;:&quot;md&quot;,&quot;tsType&quot;:&quot;'md'|'sm'&quot;},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;default&quot;,&quot;active&quot;,&quot;dashed&quot;],&quot;default&quot;:&quot;default&quot;,&quot;tsType&quot;:&quot;'default'|'active'|'dashed'&quot;},&quot;muted&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;block&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;maxWidth&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;100%&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onChange&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(e:Event)=&gt;void&quot;}}">
+class Component extends DCLogic {
+  state={local:null};
+  renderVals(){
+    const p=this.props,sm=p.size==='sm',v=p.variant||'default',val=p.value??this.state.local??'';
+    const opts=p.options||[{v:'',l:'Choose…'},{v:'a',l:'Option A'},{v:'b',l:'Option B'}];
+    const muted=p.muted||(v==='dashed');
+    return {value:val,options:opts,title:p.title||'',stop:e=>e.stopPropagation(),
+      onChange:p.onChange||(e=>this.setState({local:e.target.value})),
+      disp:p.block?'flex':'inline-flex',width:p.block?'100%':(p.width||'auto'),maxWidth:p.maxWidth||'100%',
+      h:sm?'30px':'34px',fs:sm?'var(--fs-base)':'var(--fs-lg)',fw:v==='active'?500:400,
+      borderStyle:v==='dashed'?'dashed':'solid',borderColor:v==='active'?'var(--faint)':'var(--border-strong)',
+      bg:v==='active'?'var(--border-subtle)':'var(--surface)',fg:muted?'var(--muted)':'var(--ink)'};
+  }
+}
+</script>
+</body>
+</html>

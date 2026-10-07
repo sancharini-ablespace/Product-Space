@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<sc-if value="{{ isButton }}" hint-placeholder-val="{{ false }}"><span onClick="{{ stop }}"><button onClick="{{ onClick }}" title="Update confidence" style="display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;background:transparent;padding:2px 6px;margin-left:-7px;border-radius:var(--r-sm);cursor:pointer;font-size:var(--fs-md);font-weight:500;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:{{ fg }}" style-hover="border-color:var(--border-strong);background:var(--surface)"><span style="width:6px;height:6px;border-radius:50%;background:{{ dot }}"></span>{{ label }}</button></span></sc-if>
+<sc-if value="{{ isStatic }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-md);font-weight:500;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:{{ fg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ dot }}"></span>{{ label }}</span></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:90,&quot;height&quot;:30},&quot;value&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:100,&quot;default&quot;:60,&quot;tsType&quot;:&quot;number|string&quot;},&quot;high&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:70,&quot;tsType&quot;:&quot;number&quot;},&quot;low&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:50,&quot;tsType&quot;:&quot;number&quot;},&quot;onClick&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(e:Event)=&gt;void&quot;}}">
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props,n=parseInt(p.value??60),hi=+(p.high??70),lo=+(p.low??50),t=n>=hi?'green':n>=lo?'amber':'red';
+    return {label:n+'%',fg:`var(--tone-${t}-fg)`,dot:`var(--tone-${t}-dot)`,isButton:!!p.onClick,isStatic:!p.onClick,onClick:p.onClick,stop:e=>e.stopPropagation()};
+  }
+}
+</script>
+</body>
+</html>

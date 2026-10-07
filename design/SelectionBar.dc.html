@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:35;width:max-content;max-width:calc(100vw - 32px);display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 8px 8px 16px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);box-shadow:0 12px 32px rgba(28,27,26,0.16), 0 2px 6px rgba(28,27,26,0.08);font-family:var(--font-sans);font-size:var(--fs-base);color:var(--ink)">
+  <span style="font-weight:600;margin-right:4px">{{ label }}</span>
+  <sc-if value="{{ asking }}" hint-placeholder-val="{{ false }}">
+    <span style="color:var(--ink-2)">{{ askMessage }}</span>
+    <dc-import name="Button" label="Cancel" variant="ghost" size="sm" on-click="{{ onCancel }}" hint-size="auto,26px"></dc-import>
+    <dc-import name="Button" label="Delete" variant="danger" size="sm" on-click="{{ onConfirm }}" hint-size="auto,26px"></dc-import>
+  </sc-if>
+  <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}">
+    <sc-for list="{{ actions }}" as="a" hint-placeholder-count="2"><dc-import name="Button" label="{{ a.label }}" variant="secondary" size="sm" on-click="{{ a.onClick }}" hint-size="auto,26px"></dc-import></sc-for>
+    <dc-import name="Button" label="Clear selection" variant="ghost" size="sm" on-click="{{ onClear }}" hint-size="auto,26px"></dc-import>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:420,&quot;height&quot;:90},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;3 selected&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;actions&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{label:string,onClick:()=&gt;void}[]&quot;},&quot;asking&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;askMessage&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Permanently delete 3 items?&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onConfirm&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;},&quot;onCancel&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;},&quot;onClear&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;()=&gt;void&quot;}}">
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props;
+    return {label:p.label??'3 selected',actions:p.actions||[{label:'Archive'},{label:'Delete'}],asking:!!p.asking,idle:!p.asking,askMessage:p.askMessage||'',
+      onConfirm:p.onConfirm,onCancel:p.onCancel,onClear:p.onClear};
+  }
+}
+</script>
+</body>
+</html>

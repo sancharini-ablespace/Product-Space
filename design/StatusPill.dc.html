@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<span style="display:inline-flex;align-items:center;gap:6px;height:20px;padding:0 8px;border-radius:var(--r-xs);font-size:var(--fs-sm);font-weight:500;white-space:nowrap;font-family:var(--font-sans);background:{{ bg }};color:{{ fg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ dot }}"></span>{{ label }}</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:130,&quot;height&quot;:36},&quot;value&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Planned&quot;,&quot;In Progress&quot;,&quot;Blocked&quot;,&quot;Completed&quot;,&quot;Active&quot;],&quot;default&quot;:&quot;In Progress&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;gray&quot;,&quot;blue&quot;,&quot;green&quot;,&quot;amber&quot;,&quot;red&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const TONE={Planned:'gray',Todo:'gray','In Progress':'blue',Active:'blue',Blocked:'red',Done:'green',Completed:'green',High:'red',Medium:'amber',Low:'gray'};
+class Component extends DCLogic {
+  renderVals(){
+    const v=this.props.value??'Planned',t=this.props.tone||TONE[v]||'gray';
+    return {label:v,bg:`var(--tone-${t}-bg)`,fg:`var(--tone-${t}-fg)`,dot:`var(--tone-${t}-dot)`};
+  }
+}
+</script>
+</body>
+</html>

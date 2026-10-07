@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<button onClick="{{ onClick }}" title="{{ title }}" style="height:{{ h }};padding:{{ pad }};border:{{ border }};border-radius:var(--r-md);background:{{ bg }};color:{{ fg }};font-size:{{ fs }};font-weight:500;font-family:var(--font-sans);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;opacity:{{ opacity }}" style-hover="background:{{ hoverBg }};color:{{ hoverFg }}">{{ label }}</button>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:160,&quot;height&quot;:44},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;+ New feature&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;primary&quot;,&quot;secondary&quot;,&quot;ghost&quot;,&quot;danger&quot;],&quot;default&quot;:&quot;primary&quot;,&quot;tsType&quot;:&quot;'primary'|'secondary'|'ghost'|'danger'&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;md&quot;,&quot;sm&quot;],&quot;default&quot;:&quot;md&quot;,&quot;tsType&quot;:&quot;'md'|'sm'&quot;},&quot;disabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onClick&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(e:Event)=&gt;void&quot;}}">
+const V={
+  primary:{bg:'var(--primary)',fg:'var(--on-primary)',border:'0',hoverBg:'var(--primary-hover)',hoverFg:'var(--on-primary)'},
+  secondary:{bg:'var(--surface)',fg:'var(--ink)',border:'1px solid var(--border-strong)',hoverBg:'var(--surface-muted)',hoverFg:'var(--ink)'},
+  ghost:{bg:'transparent',fg:'var(--muted)',border:'0',hoverBg:'var(--hover)',hoverFg:'var(--ink)'},
+  danger:{bg:'var(--danger)',fg:'#fff',border:'0',hoverBg:'var(--danger-hover)',hoverFg:'#fff'}};
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props,v=V[p.variant]||V.secondary,sm=p.size==='sm';
+    return {...v,label:p.label??'Button',title:p.title||'',onClick:p.disabled?undefined:p.onClick,h:sm?'26px':'30px',pad:sm?'0 10px':'0 12px',fs:sm?'var(--fs-md)':'var(--fs-base)',opacity:p.disabled?0.45:1};
+  }
+}
+</script>
+</body>
+</html>

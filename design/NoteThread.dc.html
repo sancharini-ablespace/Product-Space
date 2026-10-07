@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></helmet>
+<div style="display:flex;flex-direction:column;gap:8px;font-family:var(--font-sans)">
+  <div style="position:relative;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--surface)" style-focus-within="border-color:var(--fainter)">
+    <textarea ref="{{ taRef }}" value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onKey }}" placeholder="Add a note…" rows="2" style="display:block;width:100%;resize:vertical;border:0;padding:9px 10px 6px;font-size:var(--fs-base);background:transparent;outline:none;line-height:1.45;font-family:var(--font-sans);color:var(--ink)"></textarea>
+    <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;padding:2px 10px 8px">
+        <sc-for list="{{ pending }}" as="pa" hint-placeholder-count="1">
+          <span style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 4px 0 8px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface-sunken);font-size:12px;color:var(--ink-2);max-width:220px"><span style="font-size:10px;font-weight:600;color:var(--faint);letter-spacing:0.03em">{{ pa.ext }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ pa.name }}</span><span style="color:var(--fainter);font-size:11.5px;white-space:nowrap">{{ pa.size }}</span><button onClick="{{ pa.remove }}" title="Remove" style="width:18px;height:18px;border:0;border-radius:4px;background:transparent;color:var(--faint);cursor:pointer;font-size:13px;line-height:1;padding:0" style-hover="background:var(--hover);color:var(--ink)">×</button></span>
+        </sc-for>
+      </div>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:2px;padding:4px 6px;border-top:1px solid var(--border-subtle);background:var(--surface-sunken)">
+      <button onMouseDown="{{ keep }}" onClick="{{ fmtBold }}" title="Bold (⌘B)" style="width:26px;height:26px;border:0;border-radius:5px;background:transparent;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink-3);font-family:var(--font-sans)" style-hover="background:var(--hover);color:var(--ink)">B</button>
+      <button onMouseDown="{{ keep }}" onClick="{{ fmtItalic }}" title="Italic (⌘I)" style="width:26px;height:26px;border:0;border-radius:5px;background:transparent;cursor:pointer;font-size:13px;font-style:italic;font-family:Georgia,serif;color:var(--ink-3)" style-hover="background:var(--hover);color:var(--ink)">I</button>
+      <button onMouseDown="{{ keep }}" onClick="{{ fmtStrike }}" title="Strikethrough" style="width:26px;height:26px;border:0;border-radius:5px;background:transparent;cursor:pointer;font-size:13px;text-decoration:line-through;color:var(--ink-3);font-family:var(--font-sans)" style-hover="background:var(--hover);color:var(--ink)">S</button>
+      <span style="width:1px;height:14px;background:var(--border);margin:0 4px"></span>
+      <span style="position:relative;display:inline-flex">
+        <button onMouseDown="{{ keep }}" onClick="{{ toggleListMenu }}" title="Insert list" style="display:inline-flex;align-items:center;gap:3px;height:26px;padding:0 5px 0 6px;border:0;border-radius:5px;background:{{ listBtnBg }};cursor:pointer;color:var(--ink-3)" style-hover="background:var(--hover);color:var(--ink)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="3" cy="4" r="1.1" fill="currentColor" stroke="none"></circle><circle cx="3" cy="8" r="1.1" fill="currentColor" stroke="none"></circle><circle cx="3" cy="12" r="1.1" fill="currentColor" stroke="none"></circle><path d="M6.5 4h7M6.5 8h7M6.5 12h7"></path></svg><svg width="9" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"></path></svg></button>
+        <sc-if value="{{ listOpen }}" hint-placeholder-val="{{ false }}">
+          <div onMouseDown="{{ closeListMenu }}" style="position:fixed;inset:0;z-index:40"></div>
+          <div style="position:absolute;left:0;bottom:30px;z-index:41;width:228px;padding:5px;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(20,20,15,0.12),0 1px 3px rgba(20,20,15,0.06);display:flex;flex-direction:column;gap:1px">
+            <button onMouseDown="{{ keep }}" onClick="{{ fmtList }}" style="display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;cursor:pointer;font-size:13px;color:var(--ink);text-align:left;font-family:var(--font-sans)" style-hover="background:var(--hover)"><span style="display:flex;color:var(--muted)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="3" cy="4" r="1.1" fill="currentColor" stroke="none"></circle><circle cx="3" cy="8" r="1.1" fill="currentColor" stroke="none"></circle><circle cx="3" cy="12" r="1.1" fill="currentColor" stroke="none"></circle><path d="M6.5 4h7M6.5 8h7M6.5 12h7"></path></svg></span><span style="flex:1">Bulleted list</span><span style="font-size:12px;color:var(--faint);letter-spacing:0.04em">⌘⇧8</span></button>
+            <button onMouseDown="{{ keep }}" onClick="{{ fmtNum }}" style="display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;cursor:pointer;font-size:13px;color:var(--ink);text-align:left;font-family:var(--font-sans)" style-hover="background:var(--hover)"><span style="display:flex;color:var(--muted)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2.2 2.8l1-.6v3.6" stroke-width="1.2"></path><path d="M6.5 4h7M6.5 8h7M6.5 12h7"></path></svg></span><span style="flex:1">Numbered list</span><span style="font-size:12px;color:var(--faint);letter-spacing:0.04em">⌘⇧7</span></button>
+            <button onMouseDown="{{ keep }}" onClick="{{ fmtCheck }}" style="display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;cursor:pointer;font-size:13px;color:var(--ink);text-align:left;font-family:var(--font-sans)" style-hover="background:var(--hover)"><span style="display:flex;color:var(--muted)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 4.2l1.3 1.3 2.3-2.6"></path><path d="M6.5 4h7M6.5 8h7M6.5 12h7"></path></svg></span><span style="flex:1">Checklist</span><span style="font-size:12px;color:var(--faint);letter-spacing:0.04em">⌘⇧9</span></button>
+          </div>
+        </sc-if>
+      </span>
+      <span style="width:1px;height:14px;background:var(--border);margin:0 4px"></span>
+      <label title="Add an attachment" style="display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:5px;cursor:pointer;font-size:12px;color:var(--ink-3)" style-hover="background:var(--hover);color:var(--ink)"><span style="font-size:14px;line-height:1">+</span>Attach<input type="file" multiple="true" onChange="{{ onFiles }}" style="display:none"></label>
+      <span style="flex:1"></span>
+      <dc-import name="Button" label="Add note" size="sm" variant="secondary" on-click="{{ submit }}" hint-size="80px,26px"></dc-import>
+    </div>
+  </div>
+  <sc-for list="{{ notes }}" as="nt" hint-placeholder-count="1">
+    <div style="display:flex;gap:10px;padding:10px 0 2px;border-top:1px solid var(--border-subtle)"><dc-import name="Avatar" av="{{ nt.av }}" size="20" hint-size="20px,20px"></dc-import><div style="min-width:0;flex:1"><div style="font-size:var(--fs-sm);color:var(--faint)"><span style="color:var(--ink);font-weight:500">{{ nt.author }}</span> · {{ nt.when }}</div><div style="font-size:var(--fs-base);line-height:1.5;margin-top:2px;color:var(--ink);word-break:break-word">{{ nt.body }}</div>
+      <sc-if value="{{ nt.hasAtts }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"><sc-for list="{{ nt.atts }}" as="at" hint-placeholder-count="1"><a href="{{ at.url }}" onClick="{{ at.open }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface);font-size:12px;color:var(--ink-2);text-decoration:none;max-width:240px" style-hover="border-color:var(--border-strong);background:var(--surface-hover)"><span style="font-size:10px;font-weight:600;color:var(--faint);letter-spacing:0.03em">{{ at.ext }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ at.name }}</span><span style="color:var(--fainter);font-size:11.5px;white-space:nowrap">{{ at.size }}</span></a></sc-for></div></sc-if>
+    </div></div>
+  </sc-for>
+  <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ pvClose }}" style="position:fixed;inset:0;z-index:200;background:rgba(20,20,18,0.55);display:flex;align-items:center;justify-content:center;padding:32px">
+      <div onClick="{{ stopEv }}" style="width:min(960px,100%);height:min(86vh,100%);background:var(--surface);border-radius:10px;box-shadow:0 24px 64px rgba(0,0,0,0.25);display:flex;flex-direction:column;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:600;color:var(--faint);letter-spacing:0.03em;padding:2px 5px;border:1px solid var(--border);border-radius:4px">{{ pv.ext }}</span>
+          <span style="flex:1;min-width:0;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ pv.name }}</span>
+          <span style="font-size:12px;color:var(--faint)">{{ pv.size }}</span>
+          <a href="{{ pv.url }}" download="{{ pv.name }}" style="height:28px;padding:0 10px;display:inline-flex;align-items:center;border:1px solid var(--border-strong);border-radius:var(--r-sm);font-size:12.5px;font-weight:500;color:var(--ink);text-decoration:none;background:var(--surface)" style-hover="background:var(--surface-hover)">Download</a>
+          <button onClick="{{ pvClose }}" title="Close (Esc)" style="width:28px;height:28px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--muted);font-size:18px;line-height:1;cursor:pointer" style-hover="background:var(--hover);color:var(--ink)">×</button>
+        </div>
+        <div style="flex:1;min-height:0;background:var(--surface-sunken);display:flex;align-items:center;justify-content:center">
+          <sc-if value="{{ pv.isImg }}" hint-placeholder-val="{{ false }}"><img src="{{ pv.url }}" alt="{{ pv.name }}" style="max-width:100%;max-height:100%;object-fit:contain;display:block"></sc-if>
+          <sc-if value="{{ pv.isFrame }}" hint-placeholder-val="{{ false }}"><iframe src="{{ pv.url }}" title="{{ pv.name }}" style="width:100%;height:100%;border:0;background:#fff"></iframe></sc-if>
+          <sc-if value="{{ pv.isNone }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px"><span style="font-weight:600;color:var(--ink)">No preview available</span><span>{{ pv.noneMsg }}</span></div></sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:380,&quot;height&quot;:260},&quot;thread&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{draft:string,onDraft:(e)=&gt;void,addNote:(atts)=&gt;void,notes:Array&lt;{text,author,when,av,atts?}&gt;}&quot;}}">
+const h=React.createElement;
+const fsz=b=>b<1024?b+' B':b<1048576?Math.round(b/1024)+' KB':(b/1048576).toFixed(1)+' MB';
+const extOf=n=>{const m=/\.([a-z0-9]{1,5})$/i.exec(n||'');return (m?m[1]:'file').toUpperCase()};
+function inline(str,key){
+  const out=[];const re=/(\*\*([^*]+)\*\*|~~([^~]+)~~|`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)|_([^_]+)_)/g;let last=0,m,i=0;
+  while((m=re.exec(str))){if(m.index>last)out.push(str.slice(last,m.index));const k=key+'-'+(i++);
+    if(m[2])out.push(h('strong',{key:k,style:{fontWeight:600}},m[2]));
+    else if(m[3])out.push(h('s',{key:k,style:{color:'var(--muted)'}},m[3]));
+    else if(m[4])out.push(h('code',{key:k,style:{fontFamily:'ui-monospace,Menlo,monospace',fontSize:'0.9em',padding:'1px 4px',borderRadius:4,background:'var(--surface-sunken)',border:'1px solid var(--border-subtle)'}},m[4]));
+    else if(m[5])out.push(h('a',{key:k,href:m[6],target:'_blank',rel:'noreferrer',style:{color:'var(--ink)',textDecoration:'underline',textUnderlineOffset:2}},m[5]));
+    else if(m[7])out.push(h('em',{key:k},m[7]));
+    last=re.lastIndex}
+  if(last<str.length)out.push(str.slice(last));return out;
+}
+const CK_RX=/^\s*[-*]\s+\[[ xX]\]\s+/,NUM_RX=/^\s*\d+[.)]\s+/,BUL_RX=/^\s*[-*•]\s+/,ANY_RX=/^\s*(?:[-*]\s+\[[ xX]\]|[-*•]|\d+[.)])\s+/;
+function render(text){
+  const lines=(text||'').split('\n');const blocks=[];let list=null;
+  let lt=null;lines.forEach((ln,i)=>{const cm=/^\s*[-*]\s+\[([ xX])\]\s+(.*)$/.exec(ln),bm=!cm&&/^\s*[-*•]\s+(.*)$/.exec(ln),nm=/^\s*\d+[.)]\s+(.*)$/.exec(ln),lm=cm||bm||nm,t=cm?'check':bm?'ul':'ol';
+    if(lm){if(!list||lt!==t){list=[];lt=t;blocks.push(h(t==='check'?'ul':t,{key:'u'+i,style:{margin:'2px 0',paddingLeft:t==='check'?0:t==='ol'?20:18,listStyle:t==='check'?'none':undefined}},list))}
+      if(cm){const done=cm[1]!==' ';list.push(h('li',{key:i,style:{display:'flex',alignItems:'flex-start',gap:7}},h('span',{style:{flex:'none',width:13,height:13,marginTop:3,borderRadius:3,border:'1.5px solid '+(done?'var(--ink)':'var(--border-strong)'),background:done?'var(--ink)':'transparent',color:'#fff',fontSize:9,lineHeight:'10px',textAlign:'center'}},done?'✓':''),h('span',{style:done?{textDecoration:'line-through',color:'var(--muted)'}:null},inline(cm[2],'l'+i))))}
+      else list.push(h('li',{key:i},inline(lm[1],'l'+i)))}
+    else{list=null;blocks.push(h('div',{key:i,style:{minHeight:ln?undefined:'0.6em'}},inline(ln,'p'+i)))}});
+  return blocks;
+}
+const previewKind=a=>{if(!a.url||a.url==='#')return 'none';const t=a.type||'',x=(a.ext||'').toLowerCase();if(t.startsWith('image/')||/^(png|jpe?g|gif|webp|svg|bmp|avif)$/.test(x))return 'img';if(t==='application/pdf'||t.startsWith('text/')||t.startsWith('video/')||t.startsWith('audio/')||/^(pdf|txt|md|csv|json|mp4|webm|mp3|wav|html?)$/.test(x))return 'frame';return 'none'};
+class Component extends DCLogic {
+  componentDidMount(){this._esc=e=>{if(e.key==='Escape'&&this.state.pv)this.setState({pv:null})};window.addEventListener('keydown',this._esc)}
+  componentWillUnmount(){window.removeEventListener('keydown',this._esc)}
+  state={draft:'',notes:[],pending:[],pv:null};
+  ta=null;
+  getDraft(){const t=this.props.thread;return t?(t.draft||''):this.state.draft}
+  setDraft(v){const t=this.props.thread;if(t&&t.onDraft)t.onDraft({target:{value:v}});else this.setState({draft:v})}
+  wrap(pre,post,ph){const el=this.ta,v=this.getDraft();const a=el?el.selectionStart:v.length,b=el?el.selectionEnd:v.length;const sel=v.slice(a,b)||ph;
+    const nv=v.slice(0,a)+pre+sel+post+v.slice(b);this.setDraft(nv);
+    setTimeout(()=>{if(this.ta){this.ta.focus();this.ta.setSelectionRange(a+pre.length,a+pre.length+sel.length)}},0)}
+  list(type){const el=this.ta,v=this.getDraft();const a=el?el.selectionStart:v.length,b=el?el.selectionEnd:v.length;
+    const s0=v.lastIndexOf('\n',a-1)+1;let e0=v.indexOf('\n',b);if(e0<0)e0=v.length;
+    const seg=v.slice(s0,e0).split('\n');const kindOf=l=>CK_RX.test(l)?'check':NUM_RX.test(l)?'ol':BUL_RX.test(l)?'ul':null;const all=seg.every(l=>kindOf(l)===type);
+    const ns=seg.map((l,i)=>{const bare=l.replace(ANY_RX,'');return all?bare:(type==='ol'?(i+1)+'. ':type==='check'?'- [ ] ':'- ')+bare}).join('\n');this.setDraft(v.slice(0,s0)+ns+v.slice(e0));
+    setTimeout(()=>{if(this.ta){this.ta.focus();this.ta.setSelectionRange(s0,s0+ns.length)}},0)}
+  renderVals(){
+    const t=this.props.thread;
+    const draft=this.getDraft(),onDraft=t?t.onDraft:(e=>this.setState({draft:e.target.value}));
+    const pend=this.state.pending;
+    const submit=()=>{const atts=pend.map(({name,size,ext,url,type})=>({name,size,ext,url,type}));
+      if(t){if(!draft.trim()&&!atts.length)return;t.addNote(atts);this.setState({pending:[]});return}
+      const x=draft.trim();if(!x&&!atts.length)return;
+      this.setState(s=>({draft:'',pending:[],notes:[{text:x,atts,author:'You',when:'just now',av:{i:'Y',bg:'var(--hover)',fg:'var(--ink-3)'}},...s.notes]}))};
+    const raw=t?(t.notes||[]):this.state.notes;
+    const pv=this.state.pv,kind=pv?previewKind(pv):'';
+    return {
+      pvOpen:!!pv,pvClose:()=>this.setState({pv:null}),stopEv:e=>e.stopPropagation(),
+      pv:pv?{...pv,isImg:kind==='img',isFrame:kind==='frame',isNone:kind==='none',noneMsg:pv.url&&pv.url!=='#'?'Download the file to open it.':'This file is no longer available — attachments are kept only for this session.'}:{},
+      draft,onDraft,taRef:el=>{this.ta=el},keep:e=>e.preventDefault(),submit,
+      onKey:e=>{const m=e.metaKey||e.ctrlKey;
+        if(e.key==='Enter'&&!m&&!e.shiftKey&&this.ta){const v=this.getDraft(),a=this.ta.selectionStart;if(a===this.ta.selectionEnd){const s0=v.lastIndexOf('\n',a-1)+1,line=v.slice(s0,a),pm=/^(\s*)(?:([-*])\s+\[[ xX]\]|([-*•])|(\d+)[.)])\s+/.exec(line);
+          if(pm){e.preventDefault();if(line.length===pm[0].length){this.setDraft(v.slice(0,s0)+v.slice(a));setTimeout(()=>{if(this.ta)this.ta.setSelectionRange(s0,s0)},0);return}
+            const nx=pm[1]+(pm[2]?'- [ ] ':pm[4]?(+pm[4]+1)+'. ':'- ');const nv=v.slice(0,a)+'\n'+nx+v.slice(a);this.setDraft(nv);const c=a+1+nx.length;setTimeout(()=>{if(this.ta)this.ta.setSelectionRange(c,c)},0);return}}}
+        if(!m)return;const k=e.key.toLowerCase();
+        if(e.shiftKey&&(e.code==='Digit8'||e.code==='Digit7'||e.code==='Digit9')){e.preventDefault();this.list(e.code==='Digit8'?'ul':e.code==='Digit7'?'ol':'check');return}
+        if(k==='b'){e.preventDefault();this.wrap('**','**','bold')}else if(k==='i'){e.preventDefault();this.wrap('_','_','italic')}else if(k==='enter'){e.preventDefault();submit()}},
+      fmtBold:()=>this.wrap('**','**','bold'),fmtItalic:()=>this.wrap('_','_','italic'),fmtStrike:()=>this.wrap('~~','~~','text'),fmtCode:()=>this.wrap('`','`','code'),
+      fmtList:()=>{this.setState({listOpen:false});this.list('ul')},fmtNum:()=>{this.setState({listOpen:false});this.list('ol')},fmtCheck:()=>{this.setState({listOpen:false});this.list('check')},
+      listOpen:!!this.state.listOpen,listBtnBg:this.state.listOpen?'var(--hover)':'transparent',toggleListMenu:()=>this.setState(s=>({listOpen:!s.listOpen})),closeListMenu:e=>{e.preventDefault();this.setState({listOpen:false})},fmtLink:()=>this.wrap('[','](https://)','link text'),
+      onFiles:e=>{const files=[...(e.target.files||[])];e.target.value='';if(!files.length)return;
+        this.setState(s=>({pending:[...s.pending,...files.map(f=>({id:Math.random().toString(36).slice(2),name:f.name,size:fsz(f.size),ext:extOf(f.name),url:URL.createObjectURL(f),type:f.type||''}))]}))},
+      hasPending:pend.length>0,
+      pending:pend.map(p=>({...p,remove:()=>this.setState(s=>({pending:s.pending.filter(x=>x.id!==p.id)}))})),
+      notes:raw.map(n=>({...n,body:render(n.text),atts:(n.atts||[]).map(a=>({...a,url:a.url||'#',open:e=>{e.preventDefault();this.setState({pv:a})}})),hasAtts:!!(n.atts&&n.atts.length)}))
+    };
+  }
+}
+</script>
+</body>
+</html>
