@@ -1,49 +1,63 @@
-"use client";
+'use client';
 
 // Project page — design/PM Dashboard v3.dc.html (isProject): header, meta row,
 // tabs (Overview / Versions / Features / Activity), pickers and project delete.
-import { useOptimistic, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { DeleteProjectsDialog } from "@/components/delete-projects-dialog";
-import { DeleteFeaturesDialog } from "@/components/feature/delete-features-dialog";
-import { FeaturePicker, memberItems as memberPickerItems, pocItems as pocPickerItems } from "@/components/feature/feature-picker";
-import { FeatureRowMenu } from "@/components/feature/row-menu";
-import { openFeature } from "@/components/feature/url";
-import { AvatarStack } from "@/components/hub/AvatarStack";
-import { Button } from "@/components/hub/Button";
-import { EmptyState } from "@/components/hub/EmptyState";
-import { StatusPill } from "@/components/hub/StatusPill";
-import { StatusSelect } from "@/components/hub/StatusSelect";
-import { Tabs } from "@/components/hub/Tabs";
-import { LiveNoteThread } from "@/components/live-note-thread";
-import { DatePicker, PeoplePicker, anchorOf, type Anchor } from "@/components/popovers";
-import { createPoc, setFeatureLink, setFeaturesArchived, setProjectLink, updateFeature, updateProject, updateVersion } from "@/lib/actions";
-import { currentVersion, progress } from "@/lib/derive";
-import { T, confTone, fmt, memberAv, memberName, pocAv } from "@/lib/hub";
-import type { FeatureRow } from "@/lib/queries";
-import type { FeatureStatus, Member, Poc, Priority, VersionStatus } from "@/lib/types";
-import { ProjectFeatures } from "./project-features";
-import { ProjectVersions, VersionDescription } from "./project-versions";
-import type { PickerKind, ProjectHandlers, ProjectTab, ProjectViewData, VersionView } from "./types";
+import { useOptimistic, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { DeleteProjectsDialog } from '@/components/delete-projects-dialog';
+import { DeleteFeaturesDialog } from '@/components/feature/delete-features-dialog';
+import {
+  FeaturePicker,
+  memberItems as memberPickerItems,
+  pocItems as pocPickerItems,
+} from '@/components/feature/feature-picker';
+import { FeatureRowMenu } from '@/components/feature/row-menu';
+import { openFeature } from '@/components/feature/url';
+import { AvatarStack } from '@/components/hub/AvatarStack';
+import { Button } from '@/components/hub/Button';
+import { EmptyState } from '@/components/hub/EmptyState';
+import { StatusPill } from '@/components/hub/StatusPill';
+import { StatusSelect } from '@/components/hub/StatusSelect';
+import { Tabs } from '@/components/hub/Tabs';
+import { LiveNoteThread } from '@/components/live-note-thread';
+import { DatePicker, PeoplePicker, anchorOf, type Anchor } from '@/components/popovers';
+import {
+  createPoc,
+  setFeatureLink,
+  setFeaturesArchived,
+  setProjectLink,
+  updateFeature,
+  updateProject,
+  updateVersion,
+} from '@/lib/actions';
+import { currentVersion, progress } from '@/lib/derive';
+import { T, confTone, fmt, memberAv, memberName, pocAv } from '@/lib/hub';
+import type { FeatureRow } from '@/lib/queries';
+import type { FeatureStatus, Member, Poc, Priority, VersionStatus } from '@/lib/types';
+import { ProjectFeatures } from './project-features';
+import { ProjectVersions, VersionDescription } from './project-versions';
+import type { PickerKind, ProjectHandlers, ProjectTab, ProjectViewData, VersionView } from './types';
 
 type TeamMember = Member & { role_title: string | null };
-type PocOption = Pick<Poc, "id" | "name" | "org" | "role">;
+type PocOption = Pick<Poc, 'id' | 'name' | 'org' | 'role'>;
 
 type Change =
-  | { kind: "project"; patch: Partial<ProjectViewData["project"]> }
-  | { kind: "version"; id: string; patch: Partial<VersionView> }
-  | { kind: "feature"; id: string; patch: Partial<FeatureRow> };
+  | { kind: 'project'; patch: Partial<ProjectViewData['project']> }
+  | { kind: 'version'; id: string; patch: Partial<VersionView> }
+  | { kind: 'feature'; id: string; patch: Partial<FeatureRow> };
 
 function reduce(d: ProjectViewData, c: Change): ProjectViewData {
-  if (c.kind === "project") return { ...d, project: { ...d.project, ...c.patch } };
-  if (c.kind === "version") return { ...d, versions: d.versions.map((v) => (v.id === c.id ? { ...v, ...c.patch } : v)) };
+  if (c.kind === 'project') return { ...d, project: { ...d.project, ...c.patch } };
+  if (c.kind === 'version') {
+    return { ...d, versions: d.versions.map((v) => (v.id === c.id ? { ...v, ...c.patch } : v)) };
+  }
   const upd = (fs: FeatureRow[]) => fs.map((f) => (f.id === c.id ? { ...f, ...c.patch } : f));
   return { ...d, features: upd(d.features), archived: upd(d.archived) };
 }
 
-const label11 = "text-[11px] font-medium tracking-[0.05em] text-faint uppercase";
+const label11 = 'text-[11px] font-medium tracking-[0.05em] text-faint uppercase';
 const metaBtn =
-  "flex h-[26px] cursor-pointer items-center gap-1.5 rounded-sm border border-transparent bg-transparent text-[13px] font-medium hover:border-border-strong hover:bg-surface";
+  'flex h-[26px] cursor-pointer items-center gap-1.5 rounded-sm border border-transparent bg-transparent text-[13px] font-medium hover:border-border-strong hover:bg-surface';
 
 export function ProjectView({
   data: serverData,
@@ -56,7 +70,7 @@ export function ProjectView({
   data: ProjectViewData;
   members: TeamMember[];
   pocOptions: PocOption[];
-  me: { id: string; name: string; av: ProjectHandlers["me"]["av"] };
+  me: { id: string; name: string; av: ProjectHandlers['me']['av'] };
   initialTab: ProjectTab;
   initialVersion: string | null;
 }) {
@@ -72,7 +86,7 @@ export function ProjectView({
     const v = initialVersion ?? cur?.id;
     return v ? { [v]: true } : {};
   });
-  const [picker, setPicker] = useState<{ kind: "owners" | "pocs"; anchor: Anchor } | null>(null);
+  const [picker, setPicker] = useState<{ kind: 'owners' | 'pocs'; anchor: Anchor } | null>(null);
   const [featurePicker, setFeaturePicker] = useState<{ id: string; kind: PickerKind; anchor: Anchor } | null>(null);
   const [menu, setMenu] = useState<{ id: string; anchor: Anchor } | null>(null);
   const [deletingFeatures, setDeletingFeatures] = useState<FeatureRow[] | null>(null);
@@ -85,15 +99,15 @@ export function ProjectView({
       await run();
     });
 
-  function setTab(t: ProjectTab, query = "") {
+  function setTab(t: ProjectTab, query = '') {
     setTabState(t);
-    window.history.replaceState(null, "", `/projects/${p.id}?tab=${t}${query}`);
+    window.history.replaceState(null, '', `/projects/${p.id}?tab=${t}${query}`);
   }
 
   const featsOfV = (vid: string) => features.filter((f) => f.version_id === vid);
   const sorted = [...versions].sort((a, b) => a.num - b.num);
-  const next = cur ? sorted.find((v) => v.num > cur.num && v.status !== "Completed") : undefined;
-  const openCount = features.filter((f) => f.status !== "Completed").length;
+  const next = cur ? sorted.find((v) => v.num > cur.num && v.status !== 'Completed') : undefined;
+  const openCount = features.filter((f) => f.status !== 'Completed').length;
   const cf = T[confTone(cur?.confidence ?? 0)];
 
   const addVersion = () => router.push(`/projects/${p.id}?tab=${tab}&new=version&parent=${p.id}`, { scroll: false });
@@ -104,18 +118,18 @@ export function ProjectView({
     addFeature: (vid) => router.push(`/projects/${p.id}?tab=${tab}&new=feature&parent=${vid}`, { scroll: false }),
     addFeatureHere: () => router.push(`/projects/${p.id}?tab=${tab}&new=feature`, { scroll: false }),
     setFeature: (id, patch) =>
-      mutate({ kind: "feature", id, patch: patch as Partial<FeatureRow> }, () => updateFeature(id, patch)),
+      mutate({ kind: 'feature', id, patch: patch as Partial<FeatureRow> }, () => updateFeature(id, patch)),
     openFeaturePicker: (id, kind, anchor) => setFeaturePicker({ id, kind, anchor }),
     openMenu: (id, anchor) => setMenu({ id, anchor }),
     menuFor: menu?.id ?? null,
     setVersion: (id, patch) =>
-      mutate({ kind: "version", id, patch: patch as Partial<VersionView> }, () => updateVersion(id, patch)),
+      mutate({ kind: 'version', id, patch: patch as Partial<VersionView> }, () => updateVersion(id, patch)),
     openTargetPicker: (id, anchor) => setDatePick({ versionId: id, anchor }),
   };
 
   const openVersion = (vid: string) => {
     setExp((e) => ({ ...e, [vid]: true }));
-    setTab("versions", `&version=${vid}`);
+    setTab('versions', `&version=${vid}`);
   };
 
   // ---------------------------------------------------------------------------
@@ -126,27 +140,27 @@ export function ProjectView({
 
   function pickerProps() {
     if (!picker) return null;
-    const isPoc = picker.kind === "pocs";
+    const isPoc = picker.kind === 'pocs';
     return {
-      title: isPoc ? "Project POCs" : "Project owners",
+      title: isPoc ? 'Project POCs' : 'Project owners',
       items: isPoc ? pocItems : memberItems,
       selected: (isPoc ? p.pocs : p.owners).map((x) => x.id),
       onToggle: (id: string, on: boolean) => {
         if (isPoc) {
           const c = pocOptions.find((x) => x.id === id);
           const pocs = on ? [...p.pocs, { ...c, email: null } as Poc] : p.pocs.filter((x) => x.id !== id);
-          mutate({ kind: "project", patch: { pocs } }, () => setProjectLink(p.id, "pocs", id, on));
+          mutate({ kind: 'project', patch: { pocs } }, () => setProjectLink(p.id, 'pocs', id, on));
         } else {
           const m = members.find((x) => x.id === id)!;
           const owners = on ? [...p.owners, m] : p.owners.filter((x) => x.id !== id);
-          mutate({ kind: "project", patch: { owners } }, () => setProjectLink(p.id, "owners", id, on));
+          mutate({ kind: 'project', patch: { owners } }, () => setProjectLink(p.id, 'owners', id, on));
         }
       },
       onAddNew: isPoc
         ? (name: string) =>
             startTransition(async () => {
               const res = await createPoc({ name });
-              if (res.id) await setProjectLink(p.id, "pocs", res.id, true);
+              if (res.id) await setProjectLink(p.id, 'pocs', res.id, true);
             })
         : undefined,
     };
@@ -157,13 +171,13 @@ export function ProjectView({
   // Render
   // ---------------------------------------------------------------------------
   const owners = p.owners;
-  const ownersLabel = owners.length === 1 ? memberName(owners[0]!) : owners.length ? "" : "Add owner";
+  const ownersLabel = owners.length === 1 ? memberName(owners[0]!) : owners.length ? '' : 'Add owner';
   const tabs = (
     [
-      ["overview", "Overview", ""],
-      ["versions", "Versions", versions.length],
-      ["features", "Features", features.length],
-      ["activity", "Activity", ""],
+      ['overview', 'Overview', ''],
+      ['versions', 'Versions', versions.length],
+      ['features', 'Features', features.length],
+      ['activity', 'Activity', ''],
     ] as const
   ).map(([id, label, count]) => ({ label, count, active: tab === id, go: () => setTab(id) }));
 
@@ -172,7 +186,7 @@ export function ProjectView({
       <div className="flex items-center gap-1.5 text-md text-faint">
         <button
           type="button"
-          onClick={() => router.push("/projects")}
+          onClick={() => router.push('/projects')}
           className="-ml-1 cursor-pointer rounded-[4px] border-0 bg-transparent px-1 py-0.5 text-md text-muted hover:bg-hover hover:text-ink"
         >
           Projects
@@ -198,9 +212,9 @@ export function ProjectView({
             <button
               type="button"
               title="Edit owners"
-              onClick={(e) => setPicker({ kind: "owners", anchor: anchorOf(e.currentTarget) })}
+              onClick={(e) => setPicker({ kind: 'owners', anchor: anchorOf(e.currentTarget) })}
               className={`${metaBtn} -ml-1.5 max-w-full min-w-0 px-1.5`}
-              style={{ color: owners.length ? "var(--ink)" : "var(--fainter)" }}
+              style={{ color: owners.length ? 'var(--ink)' : 'var(--fainter)' }}
             >
               <AvatarStack people={owners.map((o) => ({ ...memberAv(o), name: memberName(o) }))} max={4} empty="" />
               <span className="truncate">{ownersLabel}</span>
@@ -211,9 +225,9 @@ export function ProjectView({
             <button
               type="button"
               title="Edit project POCs"
-              onClick={(e) => setPicker({ kind: "pocs", anchor: anchorOf(e.currentTarget) })}
+              onClick={(e) => setPicker({ kind: 'pocs', anchor: anchorOf(e.currentTarget) })}
               className={`${metaBtn} max-w-[220px] px-2`}
-              style={{ color: p.pocs.length ? "var(--ink)" : "var(--fainter)" }}
+              style={{ color: p.pocs.length ? 'var(--ink)' : 'var(--fainter)' }}
             >
               <AvatarStack people={p.pocs.map((c) => ({ ...pocAv(c), square: false }))} max={4} empty="" />
               {!p.pocs.length && <span>Add POC</span>}
@@ -226,7 +240,7 @@ export function ProjectView({
               value={p.status}
               onChange={(e) => {
                 const status = e.target.value;
-                mutate({ kind: "project", patch: { status } }, () => updateProject(p.id, { status }));
+                mutate({ kind: 'project', patch: { status } }, () => updateProject(p.id, { status }));
               }}
             />
           </div>
@@ -244,15 +258,18 @@ export function ProjectView({
           <div className="flex min-w-0 flex-col gap-1.5 border-l border-border-subtle px-[18px] py-3">
             <span className={label11}>Current version</span>
             <span className="text-[13px] leading-5 font-semibold whitespace-nowrap">
-              {cur ? `Version ${cur.num}` : "—"}{" "}
+              {cur ? `Version ${cur.num}` : '—'}{' '}
               <span className="font-medium text-faint">· {fmt(cur?.target_date)}</span>
             </span>
           </div>
           <div className="flex min-w-0 flex-col gap-1.5 border-l border-border-subtle px-[18px] py-3">
             <span className={label11}>Confidence</span>
-            <span className="inline-flex items-center gap-1.5 text-[15px] leading-5 font-semibold" style={{ color: cf.fg }}>
+            <span
+              className="inline-flex items-center gap-1.5 text-[15px] leading-5 font-semibold"
+              style={{ color: cf.fg }}
+            >
               <span className="size-[7px] rounded-full" style={{ background: cf.dot }} />
-              {cur ? `${cur.confidence}%` : "—"}
+              {cur ? `${cur.confidence}%` : '—'}
             </span>
           </div>
           <div className="flex min-w-0 flex-col gap-1.5 border-l border-border-subtle px-[18px] py-3">
@@ -266,11 +283,17 @@ export function ProjectView({
         <Tabs items={tabs} />
       </div>
 
-      {tab === "overview" && (
+      {tab === 'overview' && (
         <div className="flex flex-wrap items-start gap-4">
           <div className="flex min-w-0 flex-[2_1_520px] flex-col gap-3">
             {cur ? (
-              <VersionCard label="Current version" v={cur} fs={featsOfV(cur.id)} onOpen={() => openVersion(cur.id)} h={handlers} />
+              <VersionCard
+                label="Current version"
+                v={cur}
+                fs={featsOfV(cur.id)}
+                onOpen={() => openVersion(cur.id)}
+                h={handlers}
+              />
             ) : (
               <EmptyState
                 icon="flag"
@@ -282,7 +305,13 @@ export function ProjectView({
               />
             )}
             {next && (
-              <VersionCard label="Up next" v={next} fs={featsOfV(next.id)} onOpen={() => openVersion(next.id)} h={handlers} />
+              <VersionCard
+                label="Up next"
+                v={next}
+                fs={featsOfV(next.id)}
+                onOpen={() => openVersion(next.id)}
+                h={handlers}
+              />
             )}
           </div>
           <div className="min-w-0 flex-[1_1_300px] overflow-hidden rounded-lg border border-border bg-surface">
@@ -296,7 +325,7 @@ export function ProjectView({
         </div>
       )}
 
-      {tab === "versions" && !versions.length && (
+      {tab === 'versions' && !versions.length && (
         <EmptyState
           icon="flag"
           title="No versions yet"
@@ -306,7 +335,7 @@ export function ProjectView({
           bordered
         />
       )}
-      {tab === "versions" && !!versions.length && (
+      {tab === 'versions' && !!versions.length && (
         <ProjectVersions
           versions={sorted}
           featsOfV={featsOfV}
@@ -317,9 +346,11 @@ export function ProjectView({
         />
       )}
 
-      {tab === "features" && <ProjectFeatures versions={sorted} features={features} archived={data.archived} h={handlers} />}
+      {tab === 'features' && (
+        <ProjectFeatures versions={sorted} features={features} archived={data.archived} h={handlers} />
+      )}
 
-      {tab === "activity" && (
+      {tab === 'activity' && (
         <div className="max-w-[760px] rounded-lg border border-border bg-surface px-4 py-1">
           {!data.activity.length && (
             <EmptyState
@@ -349,7 +380,7 @@ export function ProjectView({
         <PeoplePicker
           anchor={picker.anchor}
           title={pk.title}
-          placeholder={pk.items === pocItems ? "Search or add a customer…" : "Search team…"}
+          placeholder={pk.items === pocItems ? 'Search or add a customer…' : 'Search team…'}
           items={pk.items}
           selected={pk.selected}
           onToggle={pk.onToggle}
@@ -365,7 +396,7 @@ export function ProjectView({
           members={members}
           pocOptions={pocOptions}
           meId={me.id}
-          onLocal={(patch) => apply({ kind: "feature", id: featurePicker.id, patch })}
+          onLocal={(patch) => apply({ kind: 'feature', id: featurePicker.id, patch })}
           onClose={() => setFeaturePicker(null)}
         />
       )}
@@ -379,7 +410,9 @@ export function ProjectView({
             const f = allFeatures.find((x) => x.id === menu.id)!;
             const m = members.find((x) => x.id === userId)!;
             const watchers = on ? [...f.watchers, m] : f.watchers.filter((w) => w.id !== userId);
-            mutate({ kind: "feature", id: f.id, patch: { watchers } }, () => setFeatureLink(f.id, "watchers", userId, on));
+            mutate({ kind: 'feature', id: f.id, patch: { watchers } }, () =>
+              setFeatureLink(f.id, 'watchers', userId, on),
+            );
           }}
           onArchive={() => {
             const f = allFeatures.find((x) => x.id === menu.id)!;
@@ -396,7 +429,11 @@ export function ProjectView({
         />
       )}
       {deletingFeatures && (
-        <DeleteFeaturesDialog features={deletingFeatures} onCancel={() => setDeletingFeatures(null)} onDeleted={() => setDeletingFeatures(null)} />
+        <DeleteFeaturesDialog
+          features={deletingFeatures}
+          onCancel={() => setDeletingFeatures(null)}
+          onDeleted={() => setDeletingFeatures(null)}
+        />
       )}
       {datePick && (
         <DatePicker
@@ -404,7 +441,7 @@ export function ProjectView({
           value={versions.find((v) => v.id === datePick.versionId)?.target_date ?? null}
           onPick={(iso) => {
             const target_date = iso || null;
-            mutate({ kind: "version", id: datePick.versionId, patch: { target_date } }, () =>
+            mutate({ kind: 'version', id: datePick.versionId, patch: { target_date } }, () =>
               updateVersion(datePick.versionId, { targetDate: target_date }),
             );
           }}
@@ -412,7 +449,11 @@ export function ProjectView({
         />
       )}
       {deleting && (
-        <DeleteProjectsDialog ids={[p.id]} onCancel={() => setDeleting(false)} onDeleted={() => router.push("/projects")} />
+        <DeleteProjectsDialog
+          ids={[p.id]}
+          onCancel={() => setDeleting(false)}
+          onDeleted={() => router.push('/projects')}
+        />
       )}
     </div>
   );

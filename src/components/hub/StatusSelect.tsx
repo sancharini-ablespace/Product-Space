@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
 // design/StatusSelect.dc.html
-import { useState } from "react";
-import { ST_TONE } from "@/lib/hub";
-import { SelectChevron } from "./icons";
+import { useState } from 'react';
+import { ST_TONE } from '@/lib/hub';
+import { SelectChevron } from './icons';
 
-export type StatusKind = "feature" | "version" | "project";
+export type StatusKind = 'feature' | 'version' | 'project';
 
 const OPTIONS: Record<StatusKind, string[]> = {
-  feature: ["Planned", "In Progress", "Blocked", "Completed"],
-  version: ["Planned", "In Progress", "Completed"],
-  project: ["Planned", "Active", "Completed"],
+  feature: ['Planned', 'In Progress', 'Blocked', 'Completed'],
+  version: ['Planned', 'In Progress', 'Completed'],
+  project: ['Planned', 'Active', 'Completed'],
 };
 
 export function StatusSelect({
   value,
-  kind = "feature",
+  kind = 'feature',
   onChange,
 }: {
   value?: string;
@@ -23,8 +23,8 @@ export function StatusSelect({
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   const [local, setLocal] = useState<string | null>(null);
-  const v = value ?? local ?? "Planned";
-  const t = ST_TONE[v] || "gray";
+  const v = value ?? local ?? 'Planned';
+  const t = ST_TONE[v] || 'gray';
   const fg = `var(--tone-${t}-fg)`;
   return (
     <span onClick={(e) => e.stopPropagation()} className="relative inline-flex items-center">

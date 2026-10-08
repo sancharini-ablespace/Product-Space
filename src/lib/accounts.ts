@@ -1,13 +1,13 @@
-import "server-only";
-import bcrypt from "bcryptjs";
-import { db } from "./supabase";
+import 'server-only';
+import bcrypt from 'bcryptjs';
+import { db } from './supabase';
 
-export const allowedDomain = (process.env.ALLOWED_EMAIL_DOMAIN ?? "ablespace.io").toLowerCase();
+export const allowedDomain = (process.env.ALLOWED_EMAIL_DOMAIN ?? 'ablespace.io').toLowerCase();
 
 /** Emails that may set up an account without an invite (bootstraps the first users). */
 const adminEmails = new Set(
-  (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
+  (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean),
 );
@@ -36,23 +36,24 @@ export const isAdminEmail = (email: string) => adminEmails.has(normalizeEmail(em
 export const hashPassword = (password: string) => bcrypt.hash(password, 12);
 
 // Compared against when the email is unknown, so response time doesn't reveal which emails exist.
-const DUMMY_HASH = "$2b$12$ue.rF0BoDBR1ArXuuUWTaueTiAe/lQaqr4RGnKrqbtlw5hdFORDBa";
+const DUMMY_HASH = '$2b$12$ue.rF0BoDBR1ArXuuUWTaueTiAe/lQaqr4RGnKrqbtlw5hdFORDBa';
 
-type AccountRow = {
+interface AccountRow {
   id: string;
   email: string;
   name: string | null;
   image: string | null;
   password_hash: string | null;
+  password_changed_at: string | null;
   invite_role: string | null;
   activated_at: string | null;
-};
+}
 
 export async function findAccount(email: string): Promise<AccountRow | null> {
   const { data, error } = await db()
-    .from("users")
-    .select("id, email, name, image, password_hash, invite_role, activated_at")
-    .eq("email", normalizeEmail(email))
+    .from('users')
+    .select('id, email, name, image, password_hash, password_changed_at, invite_role, activated_at')
+    .eq('email', normalizeEmail(email))
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data;
@@ -63,5 +64,6 @@ export async function verifyCredentials(email: string, password: string) {
   const account = isAllowedEmail(email) ? await findAccount(email) : null;
   const ok = await bcrypt.compare(password, account?.password_hash ?? DUMMY_HASH);
   if (!account?.password_hash || !ok) return null;
-  return { id: account.id, email: account.email, name: account.name, image: account.image };
+  const { id, name, image, password_changed_at: pwdAt } = account;
+  return { id, email: account.email, name, image, pwdAt };
 }

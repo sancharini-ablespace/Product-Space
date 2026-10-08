@@ -1,9 +1,9 @@
 // POCs — design/PM Dashboard v3.dc.html (isPocs).
-import type { Metadata } from "next";
-import { PocsView } from "@/components/poc/pocs-view";
-import { listPocs } from "@/lib/queries";
+import type { Metadata } from 'next';
+import { PocsView } from '@/components/poc/pocs-view';
+import { listPocs } from '@/lib/queries';
 
-export const metadata: Metadata = { title: "POCs · Product Hub" };
+export const metadata: Metadata = { title: 'POCs · Product Hub' };
 
 export default async function PocsPage() {
   const pocs = await listPocs();

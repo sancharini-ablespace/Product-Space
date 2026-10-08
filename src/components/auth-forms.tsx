@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useActionState, useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/hub/Button";
-import { setUpAccount, signInWithPassword } from "@/lib/auth-actions";
+import { useActionState, useState } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/hub/Button';
+import { setUpAccount, signInWithPassword } from '@/lib/auth-actions';
 
 // Field styling follows the create drawer's labelled inputs in design/PM Dashboard v3.dc.html.
-function Field({ label, ...props }: { label: string } & React.ComponentProps<"input">) {
+function Field({ label, ...props }: { label: string } & React.ComponentProps<'input'>) {
   return (
     <label className="flex flex-col gap-1.5 text-md font-medium text-ink-3">
       {label}
@@ -57,20 +57,20 @@ export function AuthCard({
   );
 }
 
-const footerLink = "text-muted underline underline-offset-2 hover:text-ink";
+const footerLink = 'text-muted underline underline-offset-2 hover:text-ink';
 
 // The email (and name) fields are controlled: React resets uncontrolled form fields after a
 // form action runs, which would wipe them after a failed attempt.
-export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
+export function LoginForm({ callbackUrl, initialError }: { callbackUrl: string; initialError: string | undefined }) {
   const [state, action, pending] = useActionState(signInWithPassword, undefined);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   return (
     <AuthCard
       title="Sign in"
       sub="Use your AbleSpace email and password."
       footer={
         <>
-          Invited by a teammate?{" "}
+          Invited by a teammate?{' '}
           <Link href="/setup" className={footerLink}>
             Set up your account
           </Link>
@@ -90,9 +90,9 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
           onChange={(e) => setEmail(e.target.value)}
         />
         <Field label="Password" name="password" type="password" autoComplete="current-password" required />
-        <ErrorText message={state?.error} />
+        <ErrorText message={state ? state.error : initialError} />
         <div className="flex justify-end">
-          <Button type="submit" variant="primary" label={pending ? "Signing in…" : "Sign in"} disabled={pending} />
+          <Button type="submit" variant="primary" label={pending ? 'Signing in…' : 'Sign in'} disabled={pending} />
         </div>
       </form>
     </AuthCard>
@@ -101,15 +101,15 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
 
 export function SetupForm({ domain }: { domain: string }) {
   const [state, action, pending] = useActionState(setUpAccount, undefined);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   return (
     <AuthCard
       title="Set up your account"
       sub="For teammates who've been invited. Choose the password you'll sign in with."
       footer={
         <>
-          Already set up?{" "}
+          Already set up?{' '}
           <Link href="/login" className={footerLink}>
             Sign in
           </Link>
@@ -128,12 +128,24 @@ export function SetupForm({ domain }: { domain: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Field label="Full name" name="name" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} />
+        <Field
+          label="Full name"
+          name="name"
+          autoComplete="name"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
         <Field label="Password" name="password" type="password" autoComplete="new-password" minLength={8} required />
         <Field label="Confirm password" name="confirm" type="password" autoComplete="new-password" required />
         <ErrorText message={state?.error} />
         <div className="flex justify-end">
-          <Button type="submit" variant="primary" label={pending ? "Setting up…" : "Set up account"} disabled={pending} />
+          <Button
+            type="submit"
+            variant="primary"
+            label={pending ? 'Setting up…' : 'Set up account'}
+            disabled={pending}
+          />
         </div>
       </form>
     </AuthCard>

@@ -1,10 +1,17 @@
 // Features — design/PM Dashboard v3.dc.html (isFeatures).
-import type { Metadata } from "next";
-import { FeaturesView } from "@/components/feature/features-view";
-import { listFeatures, listMembers, listPocOptions, listProjects, listSavedFilters, listVersionOptions } from "@/lib/queries";
-import { requireUserWith } from "@/lib/session";
+import type { Metadata } from 'next';
+import { FeaturesView } from '@/components/feature/features-view';
+import {
+  listFeatures,
+  listMembers,
+  listPocOptions,
+  listProjects,
+  listSavedFilters,
+  listVersionOptions,
+} from '@/lib/queries';
+import { requireUserWith } from '@/lib/session';
 
-export const metadata: Metadata = { title: "Features · Product Hub" };
+export const metadata: Metadata = { title: 'Features · Product Hub' };
 
 export default async function FeaturesPage() {
   const [me, [features, members, pocOptions, projects, versions, savedFilters]] = await requireUserWith(() =>

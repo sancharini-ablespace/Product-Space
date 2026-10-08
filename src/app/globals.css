@@ -1,65 +1,115 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Product Hub design tokens — copied from design/tokens.css. Edit here, every screen and component updates. */
-:root{
+:root {
   /* Verbatim from tokens.css. next/font (layout.tsx) self-hosts Geist under the family name "Geist". */
-  --font-sans:'Geist',system-ui,-apple-system,sans-serif;
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
 
   /* Neutrals */
-  --bg:#f7f7f5;
-  --surface:#ffffff;
-  --surface-sunken:#fbfbfa;
-  --surface-hover:#fafaf7;
-  --surface-muted:#f4f4f1;
-  --hover:#efeee9;
-  --selected:#ecebe7;
-  --border:#e6e5e1;
-  --border-strong:#e0dfdb;
-  --border-subtle:#f1f0ec;
-  --border-hover:#b9b7b1;
-  --ink:#1c1b1a;
-  --ink-2:#3a3935;
-  --ink-3:#55534e;
-  --muted:#6e6c66;
-  --faint:#8a8882;
-  --fainter:#9d9a93;
-  --disabled:#c4c2bc;
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-sunken: #fbfbfa;
+  --surface-hover: #fafaf7;
+  --surface-muted: #f4f4f1;
+  --hover: #efeee9;
+  --selected: #ecebe7;
+  --border: #e6e5e1;
+  --border-strong: #e0dfdb;
+  --border-subtle: #f1f0ec;
+  --border-hover: #b9b7b1;
+  --ink: #1c1b1a;
+  --ink-2: #3a3935;
+  --ink-3: #55534e;
+  --muted: #6e6c66;
+  --faint: #8a8882;
+  --fainter: #9d9a93;
+  --disabled: #c4c2bc;
 
   /* Primary action = ink */
-  --primary:#1c1b1a;
-  --primary-hover:#3a3935;
-  --on-primary:#ffffff;
+  --primary: #1c1b1a;
+  --primary-hover: #3a3935;
+  --on-primary: #ffffff;
 
   /* Semantic tones (status, confidence, priority) */
-  --tone-gray-bg:#efeee9;  --tone-gray-fg:#5d5b56;  --tone-gray-dot:#aaa79f;
-  --tone-blue-bg:oklch(0.955 0.03 250);  --tone-blue-fg:oklch(0.46 0.12 250);  --tone-blue-dot:oklch(0.65 0.14 250);
-  --tone-green-bg:oklch(0.955 0.03 150); --tone-green-fg:oklch(0.46 0.12 150); --tone-green-dot:oklch(0.65 0.14 150);
-  --tone-amber-bg:oklch(0.955 0.03 65);  --tone-amber-fg:oklch(0.46 0.12 65);  --tone-amber-dot:oklch(0.65 0.14 65);
-  --tone-red-bg:oklch(0.955 0.03 25);    --tone-red-fg:oklch(0.46 0.12 25);    --tone-red-dot:oklch(0.65 0.14 25);
-  --danger:oklch(0.55 0.17 25);
-  --danger-hover:oklch(0.5 0.17 25);
-  --focus:oklch(0.6 0.12 250);
+  --tone-gray-bg: #efeee9;
+  --tone-gray-fg: #5d5b56;
+  --tone-gray-dot: #aaa79f;
+  --tone-blue-bg: oklch(0.955 0.03 250);
+  --tone-blue-fg: oklch(0.46 0.12 250);
+  --tone-blue-dot: oklch(0.65 0.14 250);
+  --tone-green-bg: oklch(0.955 0.03 150);
+  --tone-green-fg: oklch(0.46 0.12 150);
+  --tone-green-dot: oklch(0.65 0.14 150);
+  --tone-amber-bg: oklch(0.955 0.03 65);
+  --tone-amber-fg: oklch(0.46 0.12 65);
+  --tone-amber-dot: oklch(0.65 0.14 65);
+  --tone-red-bg: oklch(0.955 0.03 25);
+  --tone-red-fg: oklch(0.46 0.12 25);
+  --tone-red-dot: oklch(0.65 0.14 25);
+  --danger: oklch(0.55 0.17 25);
+  --danger-hover: oklch(0.5 0.17 25);
+  --focus: oklch(0.6 0.12 250);
 
   /* Radius */
-  --r-xs:4px; --r-sm:5px; --r-md:6px; --r-lg:8px; --r-xl:10px; --r-pill:999px;
+  --r-xs: 4px;
+  --r-sm: 5px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 10px;
+  --r-pill: 999px;
 
   /* Type scale */
-  --fs-xs:11.5px; --fs-sm:12px; --fs-md:12.5px; --fs-base:13px; --fs-lg:13.5px; --fs-xl:15px; --fs-h2:19px; --fs-h1:20px; --fs-display:22px;
+  --fs-xs: 11.5px;
+  --fs-sm: 12px;
+  --fs-md: 12.5px;
+  --fs-base: 13px;
+  --fs-lg: 13.5px;
+  --fs-xl: 15px;
+  --fs-h2: 19px;
+  --fs-h1: 20px;
+  --fs-display: 22px;
 
   /* Elevation */
-  --shadow-pop:0 10px 28px rgba(28,27,26,0.14);
-  --shadow-drawer:-12px 0 32px rgba(28,27,26,0.08);
-  --scrim:rgba(28,27,26,0.14);
+  --shadow-pop: 0 10px 28px rgba(28, 27, 26, 0.14);
+  --shadow-drawer: -12px 0 32px rgba(28, 27, 26, 0.08);
+  --scrim: rgba(28, 27, 26, 0.14);
 }
 /* Base element styles from tokens.css, layered so Tailwind utilities can override them per element. */
-@layer base{
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:13px;-webkit-font-smoothing:antialiased}
-*{box-sizing:border-box}
-button,select,input,textarea{font:inherit;color:inherit}
-a{color:var(--ink)}a:hover{color:var(--ink-3)}
-:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
-/* tokens.css sets no line-height, so the prototype renders with the browser default; undo preflight's 1.5. */
-html{line-height:normal}
+@layer base {
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  button,
+  select,
+  input,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+  a {
+    color: var(--ink);
+  }
+  a:hover {
+    color: var(--ink-3);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+  }
+  /* tokens.css sets no line-height, so the prototype renders with the browser default; undo preflight's 1.5. */
+  html {
+    line-height: normal;
+  }
 }
 
 /* Tailwind utilities mapped onto the tokens (bg-surface, text-faint, rounded-md, text-base, shadow-pop …). */
@@ -129,4 +179,23 @@ html{line-height:normal}
 
   --shadow-pop: var(--shadow-pop);
   --shadow-drawer: var(--shadow-drawer);
+
+  /* shadcn's names for the same tokens, so src/components/ui/* renders in the design's palette.
+     `muted` is the one collision: here it is grey text (text-muted), so shadcn's bg-muted is
+     rewritten to bg-surface-muted when a primitive is added; text-muted-foreground maps below. */
+  --color-background: var(--surface);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary-foreground: var(--on-primary);
+  --color-secondary: var(--surface-muted);
+  --color-secondary-foreground: var(--ink);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--surface-muted);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--danger);
+  --color-input: var(--border-strong);
+  --color-ring: var(--focus);
 }

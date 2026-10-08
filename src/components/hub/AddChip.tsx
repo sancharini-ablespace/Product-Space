@@ -1,6 +1,6 @@
 // design/AddChip.dc.html — dashed "+ Add owner/POC/watcher" pill.
 export function AddChip({
-  label = "+ Add",
+  label = '+ Add',
   title,
   onClick,
 }: {

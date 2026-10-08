@@ -1,13 +1,18 @@
-"use client";
+'use client';
 
 // Popovers from design/PM Dashboard v3.dc.html: the people/POC picker (pk) and the date picker (dp).
-import { useEffect, useState } from "react";
-import { Avatar } from "@/components/hub/Avatar";
-import { Button } from "@/components/hub/Button";
-import type { Av } from "@/lib/hub";
+import { useEffect, useState } from 'react';
+import { Avatar } from '@/components/hub/Avatar';
+import { Button } from '@/components/hub/Button';
+import type { Av } from '@/lib/hub';
 
 /** Where a popover opens: the trigger's bounding box. */
-export type Anchor = { x: number; right: number; top: number; bottom: number };
+export interface Anchor {
+  x: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
 
 export const anchorOf = (el: Element): Anchor => {
   const r = el.getBoundingClientRect();
@@ -17,20 +22,26 @@ export const anchorOf = (el: Element): Anchor => {
 function useEsc(onClose: () => void) {
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         e.stopImmediatePropagation();
         onClose();
       }
     };
-    window.addEventListener("keydown", k, true);
-    return () => window.removeEventListener("keydown", k, true);
+    window.addEventListener('keydown', k, true);
+    return () => window.removeEventListener('keydown', k, true);
   }, [onClose]);
 }
 
 // ---------------------------------------------------------------------------
 // People / POC picker
 // ---------------------------------------------------------------------------
-export type PickerItem = { id: string; name: string; sub: string; av: Av; square?: boolean };
+export interface PickerItem {
+  id: string;
+  name: string;
+  sub: string;
+  av: Av;
+  square?: boolean;
+}
 
 export function PeoplePicker({
   anchor,
@@ -52,7 +63,7 @@ export function PeoplePicker({
   onAddNew?: (name: string) => void;
   onClose: () => void;
 }) {
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState('');
   useEsc(onClose);
   const q2 = q.trim().toLowerCase();
   const list = items.filter((x) => !q2 || x.name.toLowerCase().includes(q2) || x.sub.toLowerCase().includes(q2));
@@ -60,7 +71,7 @@ export function PeoplePicker({
   const addNew = () => {
     if (!q.trim() || !onAddNew) return;
     onAddNew(q.trim());
-    setQ("");
+    setQ('');
   };
   const H = 390;
   const left = Math.max(8, Math.min(anchor.x, window.innerWidth - 268));
@@ -74,13 +85,15 @@ export function PeoplePicker({
         className="fixed z-[73] flex w-[260px] flex-col gap-1 rounded-lg border border-border bg-surface p-1.5 shadow-pop"
         style={{ left, top }}
       >
-        <div className="px-1.5 pt-1 pb-0.5 text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase">{title}</div>
+        <div className="px-1.5 pt-1 pb-0.5 text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase">
+          {title}
+        </div>
         <input
           autoFocus
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === 'Enter') {
               if (list[0]) onToggle(list[0].id, !selected.includes(list[0].id));
               else if (canAdd) addNew();
             }
@@ -106,11 +119,11 @@ export function PeoplePicker({
                 <span
                   className="flex size-4 shrink-0 items-center justify-center rounded-[4px] border text-[10px] font-bold text-on-primary"
                   style={{
-                    borderColor: on ? "var(--ink)" : "var(--border-strong)",
-                    background: on ? "var(--ink)" : "var(--surface)",
+                    borderColor: on ? 'var(--ink)' : 'var(--border-strong)',
+                    background: on ? 'var(--ink)' : 'var(--surface)',
                   }}
                 >
-                  {on ? "✓" : ""}
+                  {on ? '✓' : ''}
                 </span>
               </button>
             );
@@ -134,8 +147,21 @@ export function PeoplePicker({
 // ---------------------------------------------------------------------------
 // Date picker
 // ---------------------------------------------------------------------------
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const pad = (n: number) => String(n).padStart(2, "0");
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+const pad = (n: number) => String(n).padStart(2, '0');
 const isoOf = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
 export function DatePicker({
@@ -153,7 +179,7 @@ export function DatePicker({
   const today = new Date();
   const [ym, setYm] = useState(value ? value.slice(0, 7) : `${today.getFullYear()}-${pad(today.getMonth() + 1)}`);
   useEsc(onClose);
-  const [yy, mm] = ym.split("-").map(Number) as [number, number];
+  const [yy, mm] = ym.split('-').map(Number) as [number, number];
   const first = new Date(yy, mm - 1, 1);
   const start = new Date(yy, mm - 1, 1 - ((first.getDay() + 6) % 7));
   const tIso = isoOf(today);
@@ -170,7 +196,7 @@ export function DatePicker({
   const left = Math.max(8, Math.min(anchor.x, window.innerWidth - W - 8));
   const top = anchor.bottom + H > window.innerHeight ? Math.max(8, anchor.top - H - 4) : anchor.bottom + 4;
   const navBtn =
-    "flex size-[26px] cursor-pointer items-center justify-center rounded-[5px] border-0 bg-transparent text-muted hover:bg-hover hover:text-ink";
+    'flex size-[26px] cursor-pointer items-center justify-center rounded-[5px] border-0 bg-transparent text-muted hover:bg-hover hover:text-ink';
 
   return (
     <>
@@ -183,7 +209,13 @@ export function DatePicker({
         <div className="mb-1.5 flex items-center justify-between">
           <button type="button" onClick={() => shift(-1)} title="Previous month" className={navBtn}>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M6.5 2 L3.5 5 L6.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M6.5 2 L3.5 5 L6.5 8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
           <span className="text-[13px] font-semibold">
@@ -191,12 +223,18 @@ export function DatePicker({
           </span>
           <button type="button" onClick={() => shift(1)} title="Next month" className={navBtn}>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M3.5 2 L6.5 5 L3.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M3.5 2 L6.5 5 L3.5 8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>
         <div className="grid grid-cols-7 gap-0.5 pt-0.5 pb-1 text-center text-[11px] font-medium text-fainter">
-          {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
+          {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d) => (
             <span key={d}>{d}</span>
           ))}
         </div>
@@ -213,11 +251,11 @@ export function DatePicker({
                 key={k}
                 type="button"
                 onClick={() => choose(k)}
-                className={`h-[30px] cursor-pointer rounded-[5px] border p-0 text-md tabular-nums ${sel ? "hover:bg-ink!" : "hover:bg-hover!"}`}
+                className={`h-[30px] cursor-pointer rounded-[5px] border p-0 text-md tabular-nums ${sel ? 'hover:bg-ink!' : 'hover:bg-hover!'}`}
                 style={{
-                  borderColor: isT && !sel ? "#cfcdc8" : "transparent",
-                  background: sel ? "var(--ink)" : "transparent",
-                  color: sel ? "#fff" : inM ? "var(--ink)" : "var(--disabled)",
+                  borderColor: isT && !sel ? '#cfcdc8' : 'transparent',
+                  background: sel ? 'var(--ink)' : 'transparent',
+                  color: sel ? '#fff' : inM ? 'var(--ink)' : 'var(--disabled)',
                   fontWeight: sel || isT ? 600 : 400,
                 }}
               >
@@ -227,7 +265,7 @@ export function DatePicker({
           })}
         </div>
         <div className="mt-2 flex justify-between border-t border-hover pt-2">
-          <Button label="Clear" variant="ghost" size="sm" onClick={() => choose("")} />
+          <Button label="Clear" variant="ghost" size="sm" onClick={() => choose('')} />
           <Button label="Today" variant="secondary" size="sm" onClick={() => choose(tIso)} />
         </div>
       </div>

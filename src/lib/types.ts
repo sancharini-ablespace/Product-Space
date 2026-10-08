@@ -1,12 +1,12 @@
 // Row types for the Product Hub schema (supabase/migrations/20261008000000_product_hub.sql).
 
-export const PROJECT_STATUSES = ["Planned", "Active", "Completed"] as const;
-export const VERSION_STATUSES = ["Planned", "In Progress", "Completed"] as const;
-export const FEATURE_STATUSES = ["Planned", "In Progress", "Blocked", "Completed"] as const;
-export const PRIORITIES = ["High", "Medium", "Low"] as const;
-export const RESEARCH_STATUSES = ["To research", "Researching", "Reviewed"] as const;
-export const ACTIVITY_TYPES = ["completed", "status", "assigned", "feature", "confidence", "note", "due"] as const;
-export const FILTER_FIELDS = ["project", "version", "status", "owner", "poc", "priority"] as const;
+export const PROJECT_STATUSES = ['Planned', 'Active', 'Completed'] as const;
+export const VERSION_STATUSES = ['Planned', 'In Progress', 'Completed'] as const;
+export const FEATURE_STATUSES = ['Planned', 'In Progress', 'Blocked', 'Completed'] as const;
+export const PRIORITIES = ['High', 'Medium', 'Low'] as const;
+export const RESEARCH_STATUSES = ['To research', 'Researching', 'Reviewed'] as const;
+export const ACTIVITY_TYPES = ['completed', 'status', 'assigned', 'feature', 'confidence', 'note', 'due'] as const;
+export const FILTER_FIELDS = ['project', 'version', 'status', 'owner', 'poc', 'priority'] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 export type VersionStatus = (typeof VERSION_STATUSES)[number];
@@ -17,7 +17,11 @@ export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 export type FilterField = (typeof FILTER_FIELDS)[number];
 
 /** A team member as other records reference them. */
-export type Member = { id: string; name: string | null; email: string };
+export interface Member {
+  id: string;
+  name: string | null;
+  email: string;
+}
 
 export type User = Member & {
   role_title: string | null;
@@ -31,7 +35,7 @@ export type User = Member & {
   created_at: string;
 };
 
-export type Poc = {
+export interface Poc {
   id: string;
   name: string;
   org: string | null;
@@ -39,18 +43,18 @@ export type Poc = {
   email: string | null;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type Project = {
+export interface Project {
   id: string;
   name: string;
   description: string | null;
   status: ProjectStatus;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type Version = {
+export interface Version {
   id: string;
   project_id: string;
   num: number;
@@ -61,9 +65,9 @@ export type Version = {
   confidence: number;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type ConfidenceChange = {
+export interface ConfidenceChange {
   id: string;
   version_id: string;
   from_value: number | null;
@@ -71,9 +75,9 @@ export type ConfidenceChange = {
   changed_by: string | null;
   reason: string;
   created_at: string;
-};
+}
 
-export type Feature = {
+export interface Feature {
   id: string;
   version_id: string | null;
   name: string;
@@ -84,9 +88,9 @@ export type Feature = {
   archived_at: string | null;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type ResearchItem = {
+export interface ResearchItem {
   id: string;
   name: string;
   url: string | null;
@@ -94,9 +98,9 @@ export type ResearchItem = {
   status: ResearchStatus;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type NoteAttachment = {
+export interface NoteAttachment {
   id: string;
   note_id: string;
   storage_path: string;
@@ -104,9 +108,9 @@ export type NoteAttachment = {
   size: number;
   mime_type: string | null;
   created_at: string;
-};
+}
 
-export type Note = {
+export interface Note {
   id: string;
   project_id: string | null;
   version_id: string | null;
@@ -116,15 +120,15 @@ export type Note = {
   author_id: string | null;
   created_at: string;
   updated_at: string;
-};
+}
 
 export type NoteParent =
-  | { kind: "project"; id: string }
-  | { kind: "version"; id: string }
-  | { kind: "feature"; id: string }
-  | { kind: "research"; id: string };
+  | { kind: 'project'; id: string }
+  | { kind: 'version'; id: string }
+  | { kind: 'feature'; id: string }
+  | { kind: 'research'; id: string };
 
-export type Activity = {
+export interface Activity {
   id: string;
   type: ActivityType;
   text: string;
@@ -133,14 +137,18 @@ export type Activity = {
   version_id: string | null;
   feature_id: string | null;
   created_at: string;
-};
+}
 
-export type FilterRule = { field: FilterField; op: "is" | "not"; value: string };
+export interface FilterRule {
+  field: FilterField;
+  op: 'is' | 'not';
+  value: string;
+}
 
-export type SavedFilter = {
+export interface SavedFilter {
   id: string;
   name: string;
   rules: FilterRule[];
   created_by: string | null;
   created_at: string;
-};
+}

@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
 // Research drawer — design/PM Dashboard v3.dc.html (isResDrawer). Opens on any page via ?research=<id>.
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/hub/Button";
-import { Select } from "@/components/hub/Select";
-import { LiveNoteThread } from "@/components/live-note-thread";
-import { deleteResearch, getResearchDrawer, setResearchProject, updateResearch } from "@/lib/actions";
-import { RS_TONE, type Av } from "@/lib/hub";
-import type { ResearchDrawerData } from "@/lib/research-view";
-import { RESEARCH_STATUSES } from "@/lib/types";
-import { closeResearch } from "./url";
+import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/hub/Button';
+import { Select } from '@/components/hub/Select';
+import { LiveNoteThread } from '@/components/live-note-thread';
+import { deleteResearch, getResearchDrawer, setResearchProject, updateResearch } from '@/lib/actions';
+import { RS_TONE, type Av } from '@/lib/hub';
+import type { ResearchDrawerData } from '@/lib/research-view';
+import { RESEARCH_STATUSES } from '@/lib/types';
+import { closeResearch } from './url';
 
-const sectionLabel = "text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase";
+const sectionLabel = 'text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase';
 const inlineInput =
-  "-ml-[7px] min-w-0 rounded-[5px] border border-transparent bg-transparent px-1.5 py-[3px] text-[13px] outline-none hover:border-border-strong focus:border-fainter focus:bg-surface";
+  '-ml-[7px] min-w-0 rounded-[5px] border border-transparent bg-transparent px-1.5 py-[3px] text-[13px] outline-none hover:border-border-strong focus:border-fainter focus:bg-surface';
 
-type Field = "name" | "category" | "url";
+type Field = 'name' | 'category' | 'url';
 
 export function ResearchDrawerHost({ me }: { me: { id: string; name: string; av: Av } }) {
-  const id = useSearchParams().get("research");
+  const id = useSearchParams().get('research');
   const [data, setData] = useState<ResearchDrawerData | null>(null);
 
   const load = useCallback(async (rid: string) => {
@@ -59,14 +59,14 @@ function ResearchDrawer({
   const [drafts, setDrafts] = useState<Partial<Record<Field, string>>>({});
   const [askDel, setAskDel] = useState(false);
   const r = data.item;
-  const tone = RS_TONE[r.status] ?? RS_TONE["To research"]!;
+  const tone = RS_TONE[r.status] ?? RS_TONE['To research']!;
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeResearch();
+      if (e.key === 'Escape') closeResearch();
     };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
   }, []);
 
   const run = (fn: () => Promise<unknown>) =>
@@ -76,7 +76,7 @@ function ResearchDrawer({
     });
   const saveField = (key: Field) => {
     const value = drafts[key];
-    if (value === undefined || value === (r[key] ?? "")) return setDrafts((d) => ({ ...d, [key]: undefined }));
+    if (value === undefined || value === (r[key] ?? '')) return setDrafts((d) => ({ ...d, [key]: undefined }));
     run(async () => {
       // A blank name is rejected by the action; the field then shows the saved name again.
       await updateResearch(r.id, { [key]: value });
@@ -84,11 +84,11 @@ function ResearchDrawer({
     });
   };
   const field = (key: Field) => ({
-    value: drafts[key] ?? r[key] ?? "",
+    value: drafts[key] ?? r[key] ?? '',
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => setDrafts((d) => ({ ...d, [key]: e.target.value })),
     onBlur: () => saveField(key),
   });
-  const url = drafts.url ?? r.url ?? "";
+  const url = drafts.url ?? r.url ?? '';
   const linked = new Set(r.projects.map((p) => p.id));
 
   return (
@@ -109,7 +109,7 @@ function ResearchDrawer({
 
         <div className="flex flex-1 flex-col gap-[22px] overflow-auto px-5 pt-4 pb-8">
           <input
-            {...field("name")}
+            {...field('name')}
             placeholder="Software name"
             className="-ml-1.5 rounded-[5px] border-0 bg-transparent px-1.5 py-1 text-[19px] font-semibold tracking-[-0.015em] outline-none hover:bg-[#f6f6f3] focus:bg-[#f6f6f3]"
           />
@@ -128,10 +128,10 @@ function ResearchDrawer({
               />
             </span>
             <span className="text-faint">Category</span>
-            <input {...field("category")} placeholder="e.g. AI tutor, Payments" className={inlineInput} />
+            <input {...field('category')} placeholder="e.g. AI tutor, Payments" className={inlineInput} />
             <span className="text-faint">Website</span>
             <span className="flex min-w-0 items-center gap-1.5">
-              <input {...field("url")} placeholder="Add link" className={`${inlineInput} flex-1`} />
+              <input {...field('url')} placeholder="Add link" className={`${inlineInput} flex-1`} />
               {url && (
                 <a
                   href={/^https?:/.test(url) ? url : `https://${url}`}
@@ -159,7 +159,7 @@ function ResearchDrawer({
                 >
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[13px] font-medium">{p.name}</div>
-                    <div className="truncate text-[12px] text-faint">{p.description ?? ""}</div>
+                    <div className="truncate text-[12px] text-faint">{p.description ?? ''}</div>
                   </div>
                   <button
                     type="button"
@@ -178,7 +178,10 @@ function ResearchDrawer({
               <div className="bg-surface-sunken px-3 py-2">
                 <Select
                   value=""
-                  options={[{ v: "", l: "+ Link a project" }, ...data.projects.filter((p) => !linked.has(p.id)).map((p) => ({ v: p.id, l: p.name }))]}
+                  options={[
+                    { v: '', l: '+ Link a project' },
+                    ...data.projects.filter((p) => !linked.has(p.id)).map((p) => ({ v: p.id, l: p.name })),
+                  ]}
                   onChange={(e) => e.target.value && run(() => setResearchProject(r.id, e.target.value, true))}
                   size="sm"
                   variant="dashed"

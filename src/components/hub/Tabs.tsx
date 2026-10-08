@@ -1,15 +1,20 @@
-"use client";
+'use client';
 
 // design/Tabs.dc.html — page tabs with counts.
-import { useState } from "react";
+import { useState } from 'react';
 
-export type TabItem = { label: string; count?: string | number; active?: boolean; go?: () => void };
+export interface TabItem {
+  label: string;
+  count?: string | number;
+  active?: boolean;
+  go?: () => void;
+}
 
 const DEFAULT_ITEMS: TabItem[] = [
-  { label: "Overview" },
-  { label: "Versions", count: 2 },
-  { label: "Features", count: 5 },
-  { label: "Activity" },
+  { label: 'Overview' },
+  { label: 'Versions', count: 2 },
+  { label: 'Features', count: 5 },
+  { label: 'Activity' },
 ];
 
 export function Tabs({ items = DEFAULT_ITEMS }: { items?: TabItem[] }) {
@@ -25,10 +30,10 @@ export function Tabs({ items = DEFAULT_ITEMS }: { items?: TabItem[] }) {
             type="button"
             onClick={t.go ?? (() => setLocal(i))}
             className="-mb-px flex cursor-pointer items-center gap-1.5 border-0 border-b-2 border-solid bg-transparent py-2 text-lg font-medium hover:text-ink!"
-            style={{ borderBottomColor: a ? "var(--ink)" : "transparent", color: a ? "var(--ink)" : "var(--muted)" }}
+            style={{ borderBottomColor: a ? 'var(--ink)' : 'transparent', color: a ? 'var(--ink)' : 'var(--muted)' }}
           >
             {t.label}
-            <span className="text-sm text-fainter">{t.count ?? ""}</span>
+            <span className="text-sm text-fainter">{t.count ?? ''}</span>
           </button>
         );
       })}

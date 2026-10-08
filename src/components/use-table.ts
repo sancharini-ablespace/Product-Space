@@ -1,11 +1,17 @@
-"use client";
+'use client';
 
 // Table sorting + selection from the prototype's mkT(): click a header to cycle
 // asc → desc → reset (or desc first for "descFirst" columns); checkbox selection
 // with a select-all that goes indeterminate.
-import { useState } from "react";
+import { useState } from 'react';
 
-export type Column<R> = { key: string | null; label: string; right?: boolean; descFirst?: boolean; sort?: (r: R) => string | number };
+export interface Column<R> {
+  key: string | null;
+  label: string;
+  right?: boolean;
+  descFirst?: boolean;
+  sort?: (r: R) => string | number;
+}
 
 export function useTable<R extends { id: string }>(rows: R[], columns: Column<R>[]) {
   const [sort, setSort] = useState<{ key: string; dir: 1 | -1 } | null>(null);
@@ -38,12 +44,16 @@ export function useTable<R extends { id: string }>(rows: R[], columns: Column<R>
       const first = c.descFirst ? -1 : 1;
       return {
         ...c,
-        arrow: active ? (sort!.dir > 0 ? "↑" : "↓") : "",
+        arrow: active ? (sort!.dir > 0 ? '↑' : '↓') : '',
         active,
         onClick: c.key
           ? () =>
               setSort((s) =>
-                !s || s.key !== c.key ? { key: c.key!, dir: first } : s.dir === first ? { key: c.key!, dir: -first as 1 | -1 } : null,
+                !s || s.key !== c.key
+                  ? { key: c.key!, dir: first }
+                  : s.dir === first
+                    ? { key: c.key!, dir: -first as 1 | -1 }
+                    : null,
               )
           : undefined,
       };
