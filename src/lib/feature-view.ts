@@ -6,14 +6,14 @@ import { getFeature, listMembers, listPocOptions, listVersionOptions, type Featu
 import type { Member, Poc } from './types';
 
 /** Everything the feature drawer shows (design/PM Dashboard v3.dc.html, isFeatDrawer). */
-export type FeatureDrawerData = {
+export interface FeatureDrawerData {
   feature: FeatureRow;
   notes: Note[];
   activity: { id: string; who: string; text: string; when: string; dot: string }[];
   members: (Member & { role_title: string | null })[];
   pocOptions: Pick<Poc, 'id' | 'name' | 'org' | 'role'>[];
   versions: { id: string; num: number; name: string; project: { id: string; name: string } }[];
-};
+}
 
 export async function loadFeatureDrawer(id: string): Promise<FeatureDrawerData | null> {
   const [f, members, pocOptions, versions] = await Promise.all([

@@ -5,7 +5,10 @@ import { useState } from 'react';
 import { av } from '@/lib/hub';
 import { Avatar } from './Avatar';
 
-export type Person = { id: string; name: string };
+export interface Person {
+  id: string;
+  name: string;
+}
 
 export function PersonSelect({
   value,

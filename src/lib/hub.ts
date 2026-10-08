@@ -1,6 +1,12 @@
 // Shared display helpers ported from the script in design/PM Dashboard v3.dc.html.
 
-export type Av = { i: string; bg: string; fg: string; name?: string; square?: boolean };
+export interface Av {
+  i: string;
+  bg: string;
+  fg: string;
+  name?: string;
+  square?: boolean;
+}
 
 /** Initials avatar on a hashed OKLCH colour (prototype `av()`). */
 export function av(n: string | null | undefined): Av {
@@ -14,7 +20,11 @@ export function av(n: string | null | undefined): Av {
 // Tones
 // ---------------------------------------------------------------------------
 export type ToneName = 'gray' | 'blue' | 'green' | 'amber' | 'red';
-export type Tone = { bg: string; fg: string; dot: string };
+export interface Tone {
+  bg: string;
+  fg: string;
+  dot: string;
+}
 
 const tk = (n: ToneName): Tone => ({
   bg: `var(--tone-${n}-bg)`,
@@ -85,9 +95,9 @@ export function days(iso: string): number {
 export function rel(ts: string): string {
   const m = (Date.now() - new Date(ts).getTime()) / 6e4;
   if (m < 1) return 'just now';
-  if (m < 60) return Math.floor(m) + 'm ago';
-  if (m < 1440) return Math.floor(m / 60) + 'h ago';
-  if (m < 10080) return Math.floor(m / 1440) + 'd ago';
+  if (m < 60) return `${Math.floor(m)}m ago`;
+  if (m < 1440) return `${Math.floor(m / 60)}h ago`;
+  if (m < 10080) return `${Math.floor(m / 1440)}d ago`;
   return fmt(new Date(ts).toISOString());
 }
 
@@ -128,7 +138,7 @@ export function targetColor(target: string | null | undefined, featureCompleted 
 // Attachments (same formatting as NoteThread's pending chips)
 // ---------------------------------------------------------------------------
 export const fileSize = (b: number) =>
-  b < 1024 ? b + ' B' : b < 1048576 ? Math.round(b / 1024) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+  b < 1024 ? `${b} B` : b < 1048576 ? `${Math.round(b / 1024)} KB` : `${(b / 1048576).toFixed(1)} MB`;
 
 export const fileExt = (n: string) => {
   const m = /\.([a-z0-9]{1,5})$/i.exec(n || '');

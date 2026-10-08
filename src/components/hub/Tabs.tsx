@@ -3,7 +3,12 @@
 // design/Tabs.dc.html — page tabs with counts.
 import { useState } from 'react';
 
-export type TabItem = { label: string; count?: string | number; active?: boolean; go?: () => void };
+export interface TabItem {
+  label: string;
+  count?: string | number;
+  active?: boolean;
+  go?: () => void;
+}
 
 const DEFAULT_ITEMS: TabItem[] = [
   { label: 'Overview' },

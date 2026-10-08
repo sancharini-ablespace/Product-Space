@@ -6,19 +6,31 @@ import type { Av } from '@/lib/hub';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
 
-export type Attachment = { name: string; size: string; ext: string; url: string; type: string };
-export type Note = { text: string; author: string; when: string; av: Av; atts?: Attachment[] };
+export interface Attachment {
+  name: string;
+  size: string;
+  ext: string;
+  url: string;
+  type: string;
+}
+export interface Note {
+  text: string;
+  author: string;
+  when: string;
+  av: Av;
+  atts?: Attachment[];
+}
 
 /** Controlled mode: the parent owns the draft and stores notes. Without it the thread keeps local state. */
-export type Thread = {
+export interface Thread {
   draft: string;
   onDraft: (value: string) => void;
   addNote: (atts: Attachment[]) => void;
   notes: Note[];
-};
+}
 
 const fsz = (b: number) =>
-  b < 1024 ? b + ' B' : b < 1048576 ? Math.round(b / 1024) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+  b < 1024 ? `${b} B` : b < 1048576 ? `${Math.round(b / 1024)} KB` : `${(b / 1048576).toFixed(1)} MB`;
 const extOf = (n: string) => {
   const m = /\.([a-z0-9]{1,5})$/i.exec(n || '');
   return (m ? m[1]! : 'file').toUpperCase();
@@ -35,20 +47,20 @@ function inline(str: string, key: string): React.ReactNode[] {
   let i = 0;
   while ((m = re.exec(str))) {
     if (m.index > last) out.push(str.slice(last, m.index));
-    const k = key + '-' + i++;
-    if (m[2])
+    const k = `${key}-${i++}`;
+    if (m[2]) {
       out.push(
         <strong key={k} className="font-semibold">
           {m[2]}
         </strong>,
       );
-    else if (m[3])
+    } else if (m[3]) {
       out.push(
         <s key={k} className="text-muted">
           {m[3]}
         </s>,
       );
-    else if (m[4])
+    } else if (m[4]) {
       out.push(
         <code
           key={k}
@@ -57,13 +69,13 @@ function inline(str: string, key: string): React.ReactNode[] {
           {m[4]}
         </code>,
       );
-    else if (m[5])
+    } else if (m[5]) {
       out.push(
         <a key={k} href={m[6]} target="_blank" rel="noreferrer" className="text-ink underline underline-offset-2">
           {m[5]}
         </a>,
       );
-    else if (m[7]) out.push(<em key={k}>{m[7]}</em>);
+    } else if (m[7]) out.push(<em key={k}>{m[7]}</em>);
     last = re.lastIndex;
   }
   if (last < str.length) out.push(str.slice(last));
@@ -89,7 +101,7 @@ function render(text: string): React.ReactNode[] {
     const t: ListType = cm ? 'check' : bm ? 'ul' : 'ol';
     if (lm) {
       if (!list || list.type !== t) {
-        list = { type: t, key: 'u' + i, items: [] };
+        list = { type: t, key: `u${i}`, items: [] };
         blocks.push(list);
       }
       if (cm) {
@@ -99,17 +111,17 @@ function render(text: string): React.ReactNode[] {
             <span
               className="mt-[3px] size-[13px] flex-none rounded-[3px] text-center text-[9px] leading-[10px] text-white"
               style={{
-                border: '1.5px solid ' + (done ? 'var(--ink)' : 'var(--border-strong)'),
+                border: `1.5px solid ${done ? 'var(--ink)' : 'var(--border-strong)'}`,
                 background: done ? 'var(--ink)' : 'transparent',
               }}
             >
               {done ? '✓' : ''}
             </span>
-            <span className={done ? 'text-muted line-through' : undefined}>{inline(cm[2]!, 'l' + i)}</span>
+            <span className={done ? 'text-muted line-through' : undefined}>{inline(cm[2]!, `l${i}`)}</span>
           </li>,
         );
       } else {
-        list.items.push(<li key={i}>{inline(lm[1]!, 'l' + i)}</li>);
+        list.items.push(<li key={i}>{inline(lm[1]!, `l${i}`)}</li>);
       }
     } else {
       list = null;
@@ -118,7 +130,7 @@ function render(text: string): React.ReactNode[] {
         key: String(i),
         items: [
           <div key={i} style={{ minHeight: ln ? undefined : '0.6em' }}>
-            {inline(ln, 'p' + i)}
+            {inline(ln, `p${i}`)}
           </div>,
         ],
       });
@@ -154,8 +166,9 @@ const previewKind = (a: Attachment) => {
     t.startsWith('video/') ||
     t.startsWith('audio/') ||
     /^(pdf|txt|md|csv|json|mp4|webm|mp3|wav|html?)$/.test(x)
-  )
+  ) {
     return 'frame';
+  }
   return 'none';
 };
 
@@ -265,7 +278,7 @@ export function NoteThread({ thread }: { thread?: Thread }) {
     const ns = seg
       .map((l, i) => {
         const bare = l.replace(ANY_RX, '');
-        return all ? bare : (type === 'ol' ? i + 1 + '. ' : type === 'check' ? '- [ ] ' : '- ') + bare;
+        return all ? bare : (type === 'ol' ? `${i + 1}. ` : type === 'check' ? '- [ ] ' : '- ') + bare;
       })
       .join('\n');
     setDraft(v.slice(0, s0) + ns + v.slice(e0));
@@ -313,8 +326,8 @@ export function NoteThread({ thread }: { thread?: Thread }) {
             later(() => ta.current?.setSelectionRange(s0, s0));
             return;
           }
-          const nx = pm[1] + (pm[2] ? '- [ ] ' : pm[4] ? +pm[4] + 1 + '. ' : '- ');
-          setDraft(v.slice(0, a) + '\n' + nx + v.slice(a));
+          const nx = pm[1] + (pm[2] ? '- [ ] ' : pm[4] ? `${+pm[4] + 1}. ` : '- ');
+          setDraft(`${v.slice(0, a)}\n${nx}${v.slice(a)}`);
           const c = a + 1 + nx.length;
           later(() => ta.current?.setSelectionRange(c, c));
           return;

@@ -78,7 +78,13 @@ export function ProfileView({
 // ---------------------------------------------------------------------------
 // Profile
 // ---------------------------------------------------------------------------
-type Draft = { name: string; role: string; timezone: string; notifyWatch: boolean; notifyConf: boolean };
+interface Draft {
+  name: string;
+  role: string;
+  timezone: string;
+  notifyWatch: boolean;
+  notifyConf: boolean;
+}
 
 function ProfileTabView({ profile }: { profile: User }) {
   const saved: Draft = {

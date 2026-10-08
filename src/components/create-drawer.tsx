@@ -13,7 +13,7 @@ import { fmt, memberName } from '@/lib/hub';
 
 type Kind = 'project' | 'version' | 'feature' | 'poc';
 type Options = Awaited<ReturnType<typeof getCreateOptions>>;
-type Form = {
+interface Form {
   name: string;
   desc: string;
   owner: string;
@@ -27,7 +27,7 @@ type Form = {
   org: string;
   role: string;
   email: string;
-};
+}
 
 const KINDS: Kind[] = ['project', 'version', 'feature', 'poc'];
 const TITLE: Record<Kind, string> = {
@@ -295,7 +295,7 @@ function CreateDrawer({
                     value={form.req}
                     options={[
                       { v: '', l: 'None yet' },
-                      ...options.pocs.map((c) => ({ v: c.id, l: c.name + (c.org ? ' · ' + c.org : '') })),
+                      ...options.pocs.map((c) => ({ v: c.id, l: c.name + (c.org ? ` · ${c.org}` : '') })),
                     ]}
                     onChange={set('req')}
                     block

@@ -3,7 +3,10 @@
 // design/Select.dc.html
 import { useState } from 'react';
 
-export type SelectOption = { v: string; l: string };
+export interface SelectOption {
+  v: string;
+  l: string;
+}
 
 const DEFAULT_OPTIONS: SelectOption[] = [
   { v: '', l: 'Choose…' },

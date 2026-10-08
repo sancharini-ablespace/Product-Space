@@ -5,7 +5,11 @@ import { auth } from '@/auth';
 import { getProfile } from './queries';
 import type { User } from './types';
 
-export type SessionUser = { id: string; email: string; name: string | null };
+export interface SessionUser {
+  id: string;
+  email: string;
+  name: string | null;
+}
 
 /** The user id carried by the session cookie (no database read). Deduped per request. */
 const sessionUserId = cache(async (): Promise<string | null> => (await auth())?.user?.id ?? null);

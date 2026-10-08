@@ -44,7 +44,10 @@ import { ValidationError, bool, clampInt, oneOf, optDate, optText, text, uuid, u
 
 // Every action returns { error } for bad input, otherwise {} (plus `id` for creates).
 // Unexpected database failures throw.
-export type ActionResult = { error?: string; id?: string };
+export interface ActionResult {
+  error?: string;
+  id?: string;
+}
 
 async function run(fn: (me: SessionUser) => Promise<ActionResult | void>): Promise<ActionResult> {
   const me = await requireUser();
@@ -711,7 +714,7 @@ export async function addNote(fd: FormData) {
     if (tooBig) throw new ValidationError(`${tooBig.name} is larger than 5 MB.`);
 
     // Resolve the parent's name and project for the activity entry.
-    let name = '';
+    let name: string;
     const refs: { projectId?: string | null; versionId?: string | null; featureId?: string | null } = {};
     if (kind === 'project') {
       const p = await getProjectCtx(parentId);
@@ -752,7 +755,7 @@ export async function addNote(fd: FormData) {
     );
 
     for (const file of files) {
-      const safe = file.name.replace(/[^\w.\-]+/g, '_').slice(-120) || 'file';
+      const safe = file.name.replace(/[^\w.-]+/g, '_').slice(-120) || 'file';
       const path = `notes/${note.id}/${crypto.randomUUID()}-${safe}`;
       const { error } = await db()
         .storage.from(ATTACHMENTS_BUCKET)

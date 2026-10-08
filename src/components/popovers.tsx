@@ -7,7 +7,12 @@ import { Button } from '@/components/hub/Button';
 import type { Av } from '@/lib/hub';
 
 /** Where a popover opens: the trigger's bounding box. */
-export type Anchor = { x: number; right: number; top: number; bottom: number };
+export interface Anchor {
+  x: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
 
 export const anchorOf = (el: Element): Anchor => {
   const r = el.getBoundingClientRect();
@@ -30,7 +35,13 @@ function useEsc(onClose: () => void) {
 // ---------------------------------------------------------------------------
 // People / POC picker
 // ---------------------------------------------------------------------------
-export type PickerItem = { id: string; name: string; sub: string; av: Av; square?: boolean };
+export interface PickerItem {
+  id: string;
+  name: string;
+  sub: string;
+  av: Av;
+  square?: boolean;
+}
 
 export function PeoplePicker({
   anchor,

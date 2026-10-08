@@ -38,7 +38,7 @@ export const hashPassword = (password: string) => bcrypt.hash(password, 12);
 // Compared against when the email is unknown, so response time doesn't reveal which emails exist.
 const DUMMY_HASH = '$2b$12$ue.rF0BoDBR1ArXuuUWTaueTiAe/lQaqr4RGnKrqbtlw5hdFORDBa';
 
-type AccountRow = {
+interface AccountRow {
   id: string;
   email: string;
   name: string | null;
@@ -46,7 +46,7 @@ type AccountRow = {
   password_hash: string | null;
   invite_role: string | null;
   activated_at: string | null;
-};
+}
 
 export async function findAccount(email: string): Promise<AccountRow | null> {
   const { data, error } = await db()

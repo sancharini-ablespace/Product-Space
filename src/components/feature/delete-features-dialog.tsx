@@ -7,7 +7,7 @@ import { deleteFeatures, getFeatureNoteCount } from '@/lib/actions';
 import { memberName } from '@/lib/hub';
 import type { FeatureRow } from '@/lib/queries';
 
-const plural = (k: string, c: number) => (c === 1 ? k : k + 's');
+const plural = (k: string, c: number) => (c === 1 ? k : `${k}s`);
 const few = (arr: string[]) => {
   const u = [...new Set(arr.filter(Boolean))];
   return u.length ? u.slice(0, 3).join(', ') + (u.length > 3 ? ` +${u.length - 3} more` : '') : '';
@@ -53,7 +53,7 @@ export function DeleteFeaturesDialog({
   const pc = fs.flatMap((f) => f.pocs.map((c) => c.name));
   if (pc.length) {
     const k = new Set(pc).size;
-    add(`Unlinked from ${k} customer ${plural('POC', k)}`, few(pc) + ' — the POCs themselves stay');
+    add(`Unlinked from ${k} customer ${plural('POC', k)}`, `${few(pc)} — the POCs themselves stay`);
   }
   if (notes) add(`${notes} ${plural('note', notes)} and attachments deleted`, '', 'red');
   add(

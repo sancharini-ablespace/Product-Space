@@ -179,4 +179,23 @@
 
   --shadow-pop: var(--shadow-pop);
   --shadow-drawer: var(--shadow-drawer);
+
+  /* shadcn's names for the same tokens, so src/components/ui/* renders in the design's palette.
+     `muted` is the one collision: here it is grey text (text-muted), so shadcn's bg-muted is
+     rewritten to bg-surface-muted when a primitive is added; text-muted-foreground maps below. */
+  --color-background: var(--surface);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary-foreground: var(--on-primary);
+  --color-secondary: var(--surface-muted);
+  --color-secondary-foreground: var(--ink);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--surface-muted);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--danger);
+  --color-input: var(--border-strong);
+  --color-ring: var(--focus);
 }

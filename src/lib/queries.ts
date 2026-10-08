@@ -231,7 +231,7 @@ export async function getProject(id: string): Promise<ProjectDetail | null> {
 // ---------------------------------------------------------------------------
 // Features
 // ---------------------------------------------------------------------------
-export type FeatureFilter = {
+export interface FeatureFilter {
   /** Only features in these versions. */
   versionIds?: string[];
   /** Only features in this project's versions. */
@@ -240,7 +240,7 @@ export type FeatureFilter = {
   archived?: boolean;
   ownerId?: string;
   watcherId?: string;
-};
+}
 
 /** Features with version/project, owners, watchers and POCs. */
 export async function listFeatures(filter: FeatureFilter = {}): Promise<FeatureRow[]> {
@@ -444,7 +444,7 @@ export async function listPocOptions(): Promise<Pick<Poc, 'id' | 'name' | 'org' 
 // ---------------------------------------------------------------------------
 // Delete impact (feeds ConfirmDialog's impact list)
 // ---------------------------------------------------------------------------
-export type ProjectDeleteImpact = {
+export interface ProjectDeleteImpact {
   projects: { id: string; name: string }[];
   versions: { num: number; name: string }[];
   features: { name: string; owners: string[]; watchers: string[] }[];
@@ -454,7 +454,7 @@ export type ProjectDeleteImpact = {
   notes: number;
   /** Notes on the projects' features (deleted only with "also delete"). */
   featureNotes: number;
-};
+}
 
 /** What deleting these projects would touch, for the confirmation dialog. */
 export async function projectDeleteImpact(projectIds: string[]): Promise<ProjectDeleteImpact> {
@@ -561,7 +561,7 @@ export async function listProjectOptions(): Promise<Pick<Project, 'id' | 'name'>
 // ---------------------------------------------------------------------------
 // ⌘K search (prototype: results). Everything searchable, in the prototype's order.
 // ---------------------------------------------------------------------------
-export type SearchIndex = {
+export interface SearchIndex {
   projects: { id: string; name: string; description: string | null }[];
   versions: { id: string; name: string; num: number; project: { id: string; name: string } }[];
   pocs: { id: string; name: string; org: string | null }[];
@@ -571,7 +571,7 @@ export type SearchIndex = {
     description: string | null;
     version: { num: number; project: { name: string } } | null;
   }[];
-};
+}
 
 export async function searchIndex(): Promise<SearchIndex> {
   const [projects, versions, pocs, features] = await Promise.all([

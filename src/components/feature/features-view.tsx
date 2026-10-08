@@ -21,8 +21,18 @@ import { DeleteFeaturesDialog } from './delete-features-dialog';
 import { FeaturePicker, type FeatureLinkKind, type PocOption, type TeamMember } from './feature-picker';
 import { openFeature } from './url';
 
-type Rule = { id: string; field: FilterField; op: 'is' | 'not'; value: string };
-type VersionOption = { id: string; num: number; name: string; project: { id: string; name: string } };
+interface Rule {
+  id: string;
+  field: FilterField;
+  op: 'is' | 'not';
+  value: string;
+}
+interface VersionOption {
+  id: string;
+  num: number;
+  name: string;
+  project: { id: string; name: string };
+}
 
 const COLS = 'grid-cols-[20px_minmax(220px,2fr)_124px_110px_minmax(150px,1fr)_150px_150px_84px_92px_84px]';
 const FIELD_L: Record<FilterField, string> = {
@@ -57,7 +67,11 @@ const has = (f: FeatureRow, k: FilterField, x: string) => {
   return Array.isArray(y) ? y.includes(x) : y === x;
 };
 
-type Change = { ids: string[]; patch?: Partial<FeatureRow>; remove?: boolean };
+interface Change {
+  ids: string[];
+  patch?: Partial<FeatureRow>;
+  remove?: boolean;
+}
 
 export function FeaturesView({
   features: serverFeatures,
@@ -105,7 +119,7 @@ export function FeaturesView({
           : k === 'owner'
             ? members.map((m) => ({ v: m.id, l: memberName(m) }))
             : k === 'poc'
-              ? pocOptions.map((c) => ({ v: c.id, l: c.name + (c.org ? ' · ' + c.org : '') }))
+              ? pocOptions.map((c) => ({ v: c.id, l: c.name + (c.org ? ` · ${c.org}` : '') }))
               : PRIORITIES.map((x) => ({ v: x, l: x }));
   const labelOf = (k: FilterField, v: string) => {
     const o = optsFor(k).find((x) => x.v === v);

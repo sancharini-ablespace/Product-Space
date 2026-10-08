@@ -16,7 +16,7 @@ import { setProjectLink, updateProject } from '@/lib/actions';
 import { memberAv, memberName } from '@/lib/hub';
 import type { Member } from '@/lib/types';
 
-export type ProjectListRow = {
+export interface ProjectListRow {
   id: string;
   name: string;
   description: string;
@@ -24,7 +24,7 @@ export type ProjectListRow = {
   cur: { num: number; name: string; target: string; confidence: number } | null;
   prog: number;
   owners: Member[];
-};
+}
 
 export type TeamMember = Member & { role_title: string | null };
 
@@ -33,7 +33,11 @@ const COLS =
 const ZZ = '￿';
 const lc = (s: string) => s.toLowerCase();
 
-type Change = { id: string; owners?: Member[]; status?: string };
+interface Change {
+  id: string;
+  owners?: Member[];
+  status?: string;
+}
 
 export function ProjectsTable({
   projects,

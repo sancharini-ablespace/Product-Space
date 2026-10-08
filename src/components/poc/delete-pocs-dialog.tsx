@@ -7,7 +7,7 @@ import { ConfirmDialog, type ImpactRow } from '@/components/hub/ConfirmDialog';
 import { deletePocs } from '@/lib/actions';
 import type { PocRow } from '@/lib/queries';
 
-const plural = (k: string, c: number) => (c === 1 ? k : k + 's');
+const plural = (k: string, c: number) => (c === 1 ? k : `${k}s`);
 const few = (arr: string[]) => {
   const u = [...new Set(arr.filter(Boolean))];
   return u.length ? u.slice(0, 3).join(', ') + (u.length > 3 ? ` +${u.length - 3} more` : '') : '';
@@ -30,14 +30,15 @@ export function DeletePocsDialog({
   if (fs.length) {
     rows.push({
       text: `Removed as requester from ${fs.length} ${plural('feature', fs.length)}`,
-      sub: few(fs.map((f) => f.name)) + ' — the features stay',
+      sub: `${few(fs.map((f) => f.name))} — the features stay`,
     });
   }
-  if (ps.length)
+  if (ps.length) {
     rows.push({
       text: `Removed as POC from ${ps.length} ${plural('project', ps.length)}`,
       sub: few(ps.map((p) => p.name)),
     });
+  }
   if (!fs.length && !ps.length) rows.push({ text: 'Not linked to any feature or project — nothing else changes' });
   rows.push({ text: 'Contact details are removed permanently', tone: 'red' });
 

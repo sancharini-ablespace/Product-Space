@@ -48,8 +48,9 @@ type Change =
 
 function reduce(d: ProjectViewData, c: Change): ProjectViewData {
   if (c.kind === 'project') return { ...d, project: { ...d.project, ...c.patch } };
-  if (c.kind === 'version')
+  if (c.kind === 'version') {
     return { ...d, versions: d.versions.map((v) => (v.id === c.id ? { ...v, ...c.patch } : v)) };
+  }
   const upd = (fs: FeatureRow[]) => fs.map((f) => (f.id === c.id ? { ...f, ...c.patch } : f));
   return { ...d, features: upd(d.features), archived: upd(d.archived) };
 }

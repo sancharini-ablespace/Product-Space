@@ -5,13 +5,13 @@
 // with a select-all that goes indeterminate.
 import { useState } from 'react';
 
-export type Column<R> = {
+export interface Column<R> {
   key: string | null;
   label: string;
   right?: boolean;
   descFirst?: boolean;
   sort?: (r: R) => string | number;
-};
+}
 
 export function useTable<R extends { id: string }>(rows: R[], columns: Column<R>[]) {
   const [sort, setSort] = useState<{ key: string; dir: 1 | -1 } | null>(null);

@@ -1,12 +1,9 @@
-// design/Button.dc.html
+// design/Button.dc.html, over the shadcn primitive.
+import { Button as UiButton } from '@/components/ui/button';
+
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
-const VARIANT: Record<Variant, string> = {
-  primary: 'border-0 bg-primary text-on-primary hover:bg-primary-hover hover:text-on-primary',
-  secondary: 'border border-border-strong bg-surface text-ink hover:bg-surface-muted hover:text-ink',
-  ghost: 'border-0 bg-transparent text-muted hover:bg-hover hover:text-ink',
-  danger: 'border-0 bg-danger text-white hover:bg-danger-hover hover:text-white',
-};
+const VARIANT = { primary: 'default', secondary: 'outline', ghost: 'ghost', danger: 'destructive' } as const;
 
 export function Button({
   label,
@@ -25,19 +22,19 @@ export function Button({
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit';
 }) {
-  const sm = size === 'sm';
   return (
-    <button
+    <UiButton
       type={type}
       title={title || undefined}
+      variant={VARIANT[variant]}
+      size={size === 'sm' ? 'sm' : 'default'}
+      // As in the prototype, only a submit button sets `disabled`; any other one just ignores clicks.
       onClick={disabled ? undefined : onClick}
       disabled={type === 'submit' ? disabled : undefined}
-      className={`inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md font-medium ${VARIANT[variant]} ${
-        sm ? 'h-[26px] px-2.5 text-md' : 'h-[30px] px-3 text-base'
-      }`}
+      className="justify-start"
       style={{ opacity: disabled ? 0.45 : 1 }}
     >
       {label}
-    </button>
+    </UiButton>
   );
 }

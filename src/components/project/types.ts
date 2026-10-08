@@ -6,7 +6,7 @@ import type { Member, Poc, VersionStatus } from '@/lib/types';
 
 export type ProjectTab = 'overview' | 'versions' | 'features' | 'activity';
 
-export type VersionView = {
+export interface VersionView {
   id: string;
   num: number;
   name: string;
@@ -16,30 +16,30 @@ export type VersionView = {
   confidence: number;
   history: { id: string; from: number | null; to: number; by: string; date: string; reason: string }[];
   notes: Note[];
-};
+}
 
-export type ActivityView = {
+export interface ActivityView {
   id: string;
   who: string;
   text: string;
   when: string;
   dot: string;
   featureId: string | null;
-};
+}
 
-export type ProjectViewData = {
+export interface ProjectViewData {
   project: { id: string; name: string; description: string; status: string; owners: Member[]; pocs: Poc[] };
   versions: VersionView[];
   features: FeatureRow[];
   archived: FeatureRow[];
   notes: Note[];
   activity: ActivityView[];
-};
+}
 
 export type PickerKind = 'owners' | 'watchers' | 'pocs';
 
 /** Handlers the tabs call back into ProjectView with. */
-export type ProjectHandlers = {
+export interface ProjectHandlers {
   me: { id: string; name: string; av: Av };
   openFeature: (id: string) => void;
   addFeature: (versionId: string) => void;
@@ -52,4 +52,4 @@ export type ProjectHandlers = {
   menuFor: string | null;
   setVersion: (id: string, patch: { status?: string; description?: string }) => void;
   openTargetPicker: (id: string, anchor: Anchor) => void;
-};
+}

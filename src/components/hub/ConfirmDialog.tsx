@@ -1,10 +1,16 @@
 'use client';
 
-// design/ConfirmDialog.dc.html — destructive confirmation with an impact list.
-import { useEffect } from 'react';
+// design/ConfirmDialog.dc.html — destructive confirmation with an impact list. Radix supplies Esc,
+// scrim click, focus trap and focus return; mounting it opens it.
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from './Button';
 
-export type ImpactRow = { text: string; sub?: string; tone?: 'red' | 'amber' | 'gray'; dot?: string };
+export interface ImpactRow {
+  text: string;
+  sub?: string;
+  tone?: 'red' | 'amber' | 'gray';
+  dot?: string;
+}
 
 const DOT = { red: 'var(--tone-red-fg)', amber: 'var(--tone-amber-fg)', gray: 'var(--faint)' };
 
@@ -29,25 +35,17 @@ export function ConfirmDialog({
   onConfirm?: () => void;
   onCancel?: () => void;
 }) {
-  useEffect(() => {
-    const k = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && onCancel) onCancel();
-    };
-    window.addEventListener('keydown', k);
-    return () => window.removeEventListener('keydown', k);
-  }, [onCancel]);
-
   return (
-    <div>
-      <div onClick={onCancel} className="fixed inset-0 z-60 bg-scrim" />
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="fixed top-1/2 left-1/2 z-[61] flex max-h-[calc(100vh-48px)] w-[min(460px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-auto rounded-[12px] border border-border bg-surface shadow-[0_20px_48px_rgba(28,27,26,0.2),0_2px_8px_rgba(28,27,26,0.08)]"
+    <Dialog open onOpenChange={(open) => !open && onCancel?.()}>
+      <DialogContent
+        showCloseButton={false}
+        className="flex max-h-[calc(100vh-48px)] w-[min(460px,calc(100vw-32px))] max-w-none flex-col gap-0 overflow-auto rounded-[12px] border-border p-0 shadow-[0_20px_48px_rgba(28,27,26,0.2),0_2px_8px_rgba(28,27,26,0.08)] sm:max-w-none"
       >
         <div className="px-5 pt-[18px] pb-1.5">
-          <div className="text-[16px] font-semibold tracking-[-0.01em] text-pretty text-ink">{title}</div>
-          <div className="mt-1 text-base text-muted">{message}</div>
+          <DialogTitle className="text-[16px] leading-normal font-semibold tracking-[-0.01em] text-pretty text-ink">
+            {title}
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-base text-muted">{message}</DialogDescription>
         </div>
         <div className="flex flex-col px-5 pt-1.5 pb-1">
           {impact.map((r, i) => (
@@ -78,7 +76,7 @@ export function ConfirmDialog({
           <Button label="Cancel" variant="secondary" size="sm" onClick={onCancel} />
           <Button label={confirmLabel} variant="danger" size="sm" onClick={onConfirm} />
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

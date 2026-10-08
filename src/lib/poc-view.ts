@@ -2,13 +2,13 @@ import 'server-only';
 import { getPoc, listFeatures, listProjectOptions, type PocRow } from './queries';
 
 /** Everything the POC drawer shows (design/PM Dashboard v3.dc.html, isPocDrawer). */
-export type PocDrawerData = {
+export interface PocDrawerData {
   poc: PocRow;
   /** All projects, for "+ Link a project". */
   projects: { id: string; name: string; description: string | null }[];
   /** Active features, for "+ Link a feature". */
   features: { id: string; name: string; projectName: string }[];
-};
+}
 
 export async function loadPocDrawer(id: string): Promise<PocDrawerData | null> {
   // One active-features read serves both the POC's requested features and "+ Link a feature".

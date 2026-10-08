@@ -7,7 +7,7 @@ import { ConfirmDialog, type ImpactRow } from '@/components/hub/ConfirmDialog';
 import { deleteProjects, getProjectDeleteImpact } from '@/lib/actions';
 import type { ProjectDeleteImpact } from '@/lib/queries';
 
-const plural = (k: string, c: number) => (c === 1 ? k : k + 's');
+const plural = (k: string, c: number) => (c === 1 ? k : `${k}s`);
 const few = (arr: string[]) => {
   const u = [...new Set(arr.filter(Boolean))];
   return u.length ? u.slice(0, 3).join(', ') + (u.length > 3 ? ` +${u.length - 3} more` : '') : '';
@@ -44,8 +44,9 @@ export function DeleteProjectsDialog({
   const rows: ImpactRow[] = [];
   const add = (text: string, sub = '', tone?: 'red' | 'amber') => rows.push({ text, sub, tone });
   const { versions: vs, features: fs } = impact;
-  if (vs.length)
+  if (vs.length) {
     add(`${vs.length} ${plural('version', vs.length)} deleted`, few(vs.map((v) => `V${v.num} — ${v.name}`)), 'red');
+  }
   let keepLabel = '';
   if (fs.length) {
     keepLabel = `Also delete its ${fs.length} ${plural('feature', fs.length)}`;
@@ -73,7 +74,7 @@ export function DeleteProjectsDialog({
   }
   if (impact.pocs.length) {
     const k = impact.pocs.length;
-    add(`Unlinked from ${k} customer ${plural('POC', k)}`, few(impact.pocs) + ' — the POCs themselves stay');
+    add(`Unlinked from ${k} customer ${plural('POC', k)}`, `${few(impact.pocs)} — the POCs themselves stay`);
   }
   const nn = impact.notes + (keepF ? 0 : impact.featureNotes);
   if (nn) add(`${nn} ${plural('note', nn)} deleted`, '', 'red');

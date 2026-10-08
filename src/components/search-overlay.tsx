@@ -9,7 +9,13 @@ import { openPoc } from '@/components/poc/url';
 import { getSearchIndex } from '@/lib/actions';
 import type { SearchIndex } from '@/lib/queries';
 
-type Result = { key: string; kind: string; label: string; sub: string; go: () => void };
+interface Result {
+  key: string;
+  kind: string;
+  label: string;
+  sub: string;
+  go: () => void;
+}
 
 export function SearchOverlay() {
   const [open, setOpen] = useState(false);
