@@ -850,8 +850,9 @@ export async function changePassword(input: { current: string; next: string; con
         .update({ password_hash: await hashPassword(next), password_changed_at: new Date().toISOString() })
         .eq('id', me.id),
     );
-    // The change ends every session issued before it, this one included; issue a fresh one.
-    await signIn('credentials', { email: me.email, password: next, redirect: false });
+    // The change ends every session issued before it, this one included. Sign in again and redirect:
+    // a re-render in this same request would still read the old token and bounce to /login.
+    await signIn('credentials', { email: me.email, password: next, redirectTo: '/profile?tab=security&changed=1' });
   });
 }
 

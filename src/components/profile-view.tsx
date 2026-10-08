@@ -1,6 +1,7 @@
 'use client';
 
 // Profile — design/PM Dashboard v3.dc.html (isProfile): Profile, Security and Team tabs.
+import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Avatar } from '@/components/hub/Avatar';
 import { Button } from '@/components/hub/Button';
@@ -195,7 +196,11 @@ function ProfileTabView({ profile }: { profile: User }) {
 // ---------------------------------------------------------------------------
 function SecurityTab({ profile }: { profile: User }) {
   const [pw, setPw] = useState({ cur: '', next: '', conf: '' });
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  // changePassword ends by redirecting here with ?changed=1 (see the action).
+  const changed = useSearchParams().get('changed') === '1';
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(
+    changed ? { ok: true, text: 'Password updated.' } : null,
+  );
   const [pending, startTransition] = useTransition();
   const setField = (k: keyof typeof pw) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setPw({ ...pw, [k]: e.target.value });
@@ -216,9 +221,8 @@ function SecurityTab({ profile }: { profile: User }) {
     if (err) return setMsg({ ok: false, text: err });
     startTransition(async () => {
       const res = await changePassword({ current: pw.cur, next: pw.next, confirm: pw.conf });
-      if (res.error) return setMsg({ ok: false, text: res.error });
-      setPw({ cur: '', next: '', conf: '' });
-      setMsg({ ok: true, text: 'Password updated.' });
+      // On success the action redirects, so only an error comes back.
+      if (res.error) setMsg({ ok: false, text: res.error });
     });
   }
 
