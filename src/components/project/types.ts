@@ -1,10 +1,10 @@
-import type { Note } from "@/components/hub/NoteThread";
-import type { Anchor } from "@/components/popovers";
-import type { Av } from "@/lib/hub";
-import type { FeatureRow } from "@/lib/queries";
-import type { Member, Poc, VersionStatus } from "@/lib/types";
+import type { Note } from '@/components/hub/NoteThread';
+import type { Anchor } from '@/components/popovers';
+import type { Av } from '@/lib/hub';
+import type { FeatureRow } from '@/lib/queries';
+import type { Member, Poc, VersionStatus } from '@/lib/types';
 
-export type ProjectTab = "overview" | "versions" | "features" | "activity";
+export type ProjectTab = 'overview' | 'versions' | 'features' | 'activity';
 
 export type VersionView = {
   id: string;
@@ -18,7 +18,14 @@ export type VersionView = {
   notes: Note[];
 };
 
-export type ActivityView = { id: string; who: string; text: string; when: string; dot: string; featureId: string | null };
+export type ActivityView = {
+  id: string;
+  who: string;
+  text: string;
+  when: string;
+  dot: string;
+  featureId: string | null;
+};
 
 export type ProjectViewData = {
   project: { id: string; name: string; description: string; status: string; owners: Member[]; pocs: Poc[] };
@@ -29,7 +36,7 @@ export type ProjectViewData = {
   activity: ActivityView[];
 };
 
-export type PickerKind = "owners" | "watchers" | "pocs";
+export type PickerKind = 'owners' | 'watchers' | 'pocs';
 
 /** Handlers the tabs call back into ProjectView with. */
 export type ProjectHandlers = {

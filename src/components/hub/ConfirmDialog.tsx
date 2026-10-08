@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
 // design/ConfirmDialog.dc.html — destructive confirmation with an impact list.
-import { useEffect } from "react";
-import { Button } from "./Button";
+import { useEffect } from 'react';
+import { Button } from './Button';
 
-export type ImpactRow = { text: string; sub?: string; tone?: "red" | "amber" | "gray"; dot?: string };
+export type ImpactRow = { text: string; sub?: string; tone?: 'red' | 'amber' | 'gray'; dot?: string };
 
-const DOT = { red: "var(--tone-red-fg)", amber: "var(--tone-amber-fg)", gray: "var(--faint)" };
+const DOT = { red: 'var(--tone-red-fg)', amber: 'var(--tone-amber-fg)', gray: 'var(--faint)' };
 
 export function ConfirmDialog({
   title,
@@ -15,7 +15,7 @@ export function ConfirmDialog({
   checkLabel,
   checked,
   onCheck,
-  confirmLabel = "Delete",
+  confirmLabel = 'Delete',
   onConfirm,
   onCancel,
 }: {
@@ -31,10 +31,10 @@ export function ConfirmDialog({
 }) {
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && onCancel) onCancel();
+      if (e.key === 'Escape' && onCancel) onCancel();
     };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
   }, [onCancel]);
 
   return (
@@ -54,7 +54,7 @@ export function ConfirmDialog({
             <div key={i} className="flex gap-2.5 border-b border-border-subtle py-[9px] text-base leading-[1.45]">
               <span
                 className="mt-[7px] size-1.5 shrink-0 rounded-full"
-                style={{ background: r.dot || DOT[r.tone ?? "gray"] || DOT.gray }}
+                style={{ background: r.dot || DOT[r.tone ?? 'gray'] || DOT.gray }}
               />
               <div className="min-w-0">
                 <div className="text-ink">{r.text}</div>

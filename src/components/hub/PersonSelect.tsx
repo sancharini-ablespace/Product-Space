@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 // design/PersonSelect.dc.html — single person, avatar-only trigger over a hidden native select.
-import { useState } from "react";
-import { av } from "@/lib/hub";
-import { Avatar } from "./Avatar";
+import { useState } from 'react';
+import { av } from '@/lib/hub';
+import { Avatar } from './Avatar';
 
 export type Person = { id: string; name: string };
 
@@ -20,8 +20,8 @@ export function PersonSelect({
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   const [local, setLocal] = useState<string | null>(null);
-  const v = value ?? local ?? people[0]?.id ?? "";
-  const name = people.find((p) => p.id === v)?.name ?? "";
+  const v = value ?? local ?? people[0]?.id ?? '';
+  const name = people.find((p) => p.id === v)?.name ?? '';
   const a = av(name);
   return (
     <span

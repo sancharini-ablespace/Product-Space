@@ -1,35 +1,35 @@
-"use client";
+'use client';
 
 // Feature drawer — design/PM Dashboard v3.dc.html (isFeatDrawer). Opens on any page
 // whose URL has ?feature=<id>; closes with ×, the scrim, or Esc (after popovers).
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { AddChip } from "@/components/hub/AddChip";
-import { Avatar } from "@/components/hub/Avatar";
-import { Button } from "@/components/hub/Button";
-import { PrioritySelect, type Priority } from "@/components/hub/PrioritySelect";
-import { Select } from "@/components/hub/Select";
-import { StatusSelect } from "@/components/hub/StatusSelect";
-import { LiveNoteThread } from "@/components/live-note-thread";
-import { anchorOf, type Anchor } from "@/components/popovers";
-import { getFeatureDrawer, setFeatureLink, updateFeature } from "@/lib/actions";
-import type { FeatureDrawerData } from "@/lib/feature-view";
-import { fmt, memberAv, memberName, pocAv, targetColor, type Av } from "@/lib/hub";
-import type { FeatureRow } from "@/lib/queries";
-import { DeleteFeaturesDialog } from "./delete-features-dialog";
-import { FeaturePicker, type FeatureLinkKind } from "./feature-picker";
-import { openPoc } from "@/components/poc/url";
-import { closeFeature } from "./url";
+import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AddChip } from '@/components/hub/AddChip';
+import { Avatar } from '@/components/hub/Avatar';
+import { Button } from '@/components/hub/Button';
+import { PrioritySelect, type Priority } from '@/components/hub/PrioritySelect';
+import { Select } from '@/components/hub/Select';
+import { StatusSelect } from '@/components/hub/StatusSelect';
+import { LiveNoteThread } from '@/components/live-note-thread';
+import { anchorOf, type Anchor } from '@/components/popovers';
+import { getFeatureDrawer, setFeatureLink, updateFeature } from '@/lib/actions';
+import type { FeatureDrawerData } from '@/lib/feature-view';
+import { fmt, memberAv, memberName, pocAv, targetColor, type Av } from '@/lib/hub';
+import type { FeatureRow } from '@/lib/queries';
+import { DeleteFeaturesDialog } from './delete-features-dialog';
+import { FeaturePicker, type FeatureLinkKind } from './feature-picker';
+import { openPoc } from '@/components/poc/url';
+import { closeFeature } from './url';
 
-const sectionLabel = "text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase";
-const chip = "inline-flex h-[26px] items-center gap-1.5 rounded-[13px] border border-border bg-surface px-1 text-md";
+const sectionLabel = 'text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase';
+const chip = 'inline-flex h-[26px] items-center gap-1.5 rounded-[13px] border border-border bg-surface px-1 text-md';
 const removeBtn =
-  "size-[18px] cursor-pointer rounded-full border-0 bg-transparent p-0 text-[13px] leading-none text-fainter hover:bg-hover hover:text-ink";
+  'size-[18px] cursor-pointer rounded-full border-0 bg-transparent p-0 text-[13px] leading-none text-fainter hover:bg-hover hover:text-ink';
 const inlineInput =
-  "-ml-[7px] min-w-0 rounded-[5px] border border-transparent bg-transparent px-1.5 py-[3px] text-[13px] outline-none hover:border-border-strong focus:border-fainter focus:bg-surface";
+  '-ml-[7px] min-w-0 rounded-[5px] border border-transparent bg-transparent px-1.5 py-[3px] text-[13px] outline-none hover:border-border-strong focus:border-fainter focus:bg-surface';
 
 export function FeatureDrawerHost({ me }: { me: { id: string; name: string; av: Av } }) {
-  const id = useSearchParams().get("feature");
+  const id = useSearchParams().get('feature');
   const [data, setData] = useState<FeatureDrawerData | null>(null);
 
   const load = useCallback(async (fid: string) => {
@@ -76,10 +76,10 @@ function FeatureDrawer({
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !deleting) closeFeature();
+      if (e.key === 'Escape' && !deleting) closeFeature();
     };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
   }, [deleting]);
 
   const local = (patch: Partial<FeatureRow>) => setData((d) => (d ? { ...d, feature: { ...d.feature, ...patch } } : d));
@@ -89,9 +89,9 @@ function FeatureDrawer({
       await run();
       await reload();
     });
-  const saveText = (key: "name" | "description" | "stakeholders") => {
+  const saveText = (key: 'name' | 'description' | 'stakeholders') => {
     const value = drafts[key];
-    if (value === undefined || value === (f[key] ?? "")) return setDrafts((d) => ({ ...d, [key]: undefined }));
+    if (value === undefined || value === (f[key] ?? '')) return setDrafts((d) => ({ ...d, [key]: undefined }));
     save({ [key]: value } as Partial<FeatureRow>, async () => {
       await updateFeature(f.id, { [key]: value });
       setDrafts((d) => ({ ...d, [key]: undefined }));
@@ -133,7 +133,7 @@ function FeatureDrawer({
               <Select
                 value=""
                 options={[
-                  { v: "", l: "No project" },
+                  { v: '', l: 'No project' },
                   ...data.versions.map((x) => ({ v: x.id, l: `${x.project.name} → Version ${x.num} — ${x.name}` })),
                 ]}
                 onChange={(e) => {
@@ -151,7 +151,7 @@ function FeatureDrawer({
           <div className="flex shrink-0 items-center gap-1.5">
             <Button label="Delete" variant="ghost" size="sm" onClick={() => setDeleting([f])} />
             <Button
-              label={watching ? "Unwatch" : "Watch"}
+              label={watching ? 'Unwatch' : 'Watch'}
               variant="secondary"
               size="sm"
               onClick={() =>
@@ -161,7 +161,7 @@ function FeatureDrawer({
                       ? f.watchers.filter((w) => w.id !== me.id)
                       : [...f.watchers, data.members.find((m) => m.id === me.id)!].filter(Boolean),
                   },
-                  () => setFeatureLink(f.id, "watchers", me.id, !watching),
+                  () => setFeatureLink(f.id, 'watchers', me.id, !watching),
                 )
               }
             />
@@ -181,13 +181,13 @@ function FeatureDrawer({
             <input
               value={drafts.name ?? f.name}
               onChange={(e) => setDrafts((d) => ({ ...d, name: e.target.value }))}
-              onBlur={() => saveText("name")}
+              onBlur={() => saveText('name')}
               className="-ml-1.5 w-full rounded-[5px] border-0 bg-transparent px-1.5 py-1 text-[19px] font-semibold tracking-[-0.015em] outline-none hover:bg-[#f6f6f3] focus:bg-[#f6f6f3]"
             />
             <textarea
-              value={drafts.description ?? f.description ?? ""}
+              value={drafts.description ?? f.description ?? ''}
               onChange={(e) => setDrafts((d) => ({ ...d, description: e.target.value }))}
-              onBlur={() => saveText("description")}
+              onBlur={() => saveText('description')}
               placeholder="Add a description…"
               rows={3}
               className="mt-0.5 -ml-1.5 w-full resize-y rounded-[5px] border-0 bg-transparent p-1.5 text-[13.5px] leading-[1.55] text-ink-2 outline-none hover:bg-[#f6f6f3] focus:bg-[#f6f6f3]"
@@ -201,7 +201,7 @@ function FeatureDrawer({
                 kind="feature"
                 value={f.status}
                 onChange={(e) => {
-                  const status = e.target.value as FeatureRow["status"];
+                  const status = e.target.value as FeatureRow['status'];
                   save({ status }, () => updateFeature(f.id, { status }));
                 }}
               />
@@ -211,7 +211,7 @@ function FeatureDrawer({
               <PrioritySelect
                 value={f.priority as Priority}
                 onChange={(e) => {
-                  const priority = e.target.value as FeatureRow["priority"];
+                  const priority = e.target.value as FeatureRow['priority'];
                   save({ priority }, () => updateFeature(f.id, { priority }));
                 }}
               />
@@ -222,12 +222,15 @@ function FeatureDrawer({
                 <span key={o.id} className={chip}>
                   <Avatar av={memberAv(o)} size={18} />
                   {you(o)}
-                  <button type="button" title="Remove" onClick={() => unlink("owners", o.id)} className={removeBtn}>
+                  <button type="button" title="Remove" onClick={() => unlink('owners', o.id)} className={removeBtn}>
                     ×
                   </button>
                 </span>
               ))}
-              <AddChip label="+ Add owner" onClick={(e) => setPicker({ kind: "owners", anchor: anchorOf(e.currentTarget) })} />
+              <AddChip
+                label="+ Add owner"
+                onClick={(e) => setPicker({ kind: 'owners', anchor: anchorOf(e.currentTarget) })}
+              />
             </span>
             <span className="self-start pt-1 text-faint">POCs</span>
             <span className="flex flex-wrap items-center gap-1.5">
@@ -240,13 +243,13 @@ function FeatureDrawer({
                 >
                   <Avatar av={pocAv(c)} size={18} square />
                   {c.name}
-                  <span className="text-faint">{c.org ?? ""}</span>
+                  <span className="text-faint">{c.org ?? ''}</span>
                   <button
                     type="button"
                     title="Remove"
                     onClick={(e) => {
                       e.stopPropagation();
-                      unlink("pocs", c.id);
+                      unlink('pocs', c.id);
                     }}
                     className={removeBtn}
                   >
@@ -254,18 +257,21 @@ function FeatureDrawer({
                   </button>
                 </span>
               ))}
-              <AddChip label="+ Add POC" onClick={(e) => setPicker({ kind: "pocs", anchor: anchorOf(e.currentTarget) })} />
+              <AddChip
+                label="+ Add POC"
+                onClick={(e) => setPicker({ kind: 'pocs', anchor: anchorOf(e.currentTarget) })}
+              />
             </span>
             <span className="text-faint">Stakeholders</span>
             <input
-              value={drafts.stakeholders ?? f.stakeholders ?? ""}
+              value={drafts.stakeholders ?? f.stakeholders ?? ''}
               onChange={(e) => setDrafts((d) => ({ ...d, stakeholders: e.target.value }))}
-              onBlur={() => saveText("stakeholders")}
+              onBlur={() => saveText('stakeholders')}
               placeholder="Who is this for?"
               className={inlineInput}
             />
             <span className="text-faint">Version target</span>
-            <span style={{ color: targetColor(v?.target_date, f.status === "Completed") }}>{fmt(v?.target_date)}</span>
+            <span style={{ color: targetColor(v?.target_date, f.status === 'Completed') }}>{fmt(v?.target_date)}</span>
           </div>
 
           <div>
@@ -275,12 +281,20 @@ function FeatureDrawer({
                 <span key={w.id} className={`${chip} bg-transparent!`}>
                   <Avatar av={memberAv(w)} size={18} />
                   {you(w)}
-                  <button type="button" title="Remove watcher" onClick={() => unlink("watchers", w.id)} className={removeBtn}>
+                  <button
+                    type="button"
+                    title="Remove watcher"
+                    onClick={() => unlink('watchers', w.id)}
+                    className={removeBtn}
+                  >
                     ×
                   </button>
                 </span>
               ))}
-              <AddChip label="+ Add watcher" onClick={(e) => setPicker({ kind: "watchers", anchor: anchorOf(e.currentTarget) })} />
+              <AddChip
+                label="+ Add watcher"
+                onClick={(e) => setPicker({ kind: 'watchers', anchor: anchorOf(e.currentTarget) })}
+              />
             </div>
           </div>
 

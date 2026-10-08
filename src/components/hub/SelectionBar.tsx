@@ -1,11 +1,11 @@
 // design/SelectionBar.dc.html — floating bulk-action bar.
-import { Button } from "./Button";
+import { Button } from './Button';
 
 export function SelectionBar({
-  label = "3 selected",
-  actions = [{ label: "Archive" }, { label: "Delete" }],
+  label = '3 selected',
+  actions = [{ label: 'Archive' }, { label: 'Delete' }],
   asking,
-  askMessage = "",
+  askMessage = '',
   onConfirm,
   onCancel,
   onClear,

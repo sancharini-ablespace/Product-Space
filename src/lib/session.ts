@@ -1,9 +1,9 @@
-import "server-only";
-import { cache } from "react";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
-import { getProfile } from "./queries";
-import type { User } from "./types";
+import 'server-only';
+import { cache } from 'react';
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
+import { getProfile } from './queries';
+import type { User } from './types';
 
 export type SessionUser = { id: string; email: string; name: string | null };
 
@@ -30,7 +30,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
 /** Returns the signed-in user or redirects to /login. */
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user) redirect('/login');
   return user;
 }
 
@@ -48,12 +48,14 @@ export async function requireProfile(): Promise<User> {
  */
 export async function requireUserWith<T>(load: (userId: string) => Promise<T>): Promise<[SessionUser, T]> {
   const id = await sessionUserId();
-  if (!id) redirect("/login");
+  if (!id) redirect('/login');
   // Via a resolved promise so a synchronous throw in `load` (e.g. input validation) is held too.
-  const pending = Promise.resolve(id).then(load).then(
-    (value) => ({ ok: true as const, value }),
-    (error: unknown) => ({ ok: false as const, error }),
-  );
+  const pending = Promise.resolve(id)
+    .then(load)
+    .then(
+      (value) => ({ ok: true as const, value }),
+      (error: unknown) => ({ ok: false as const, error }),
+    );
   const user = await requireUser();
   const res = await pending;
   if (!res.ok) throw res.error;

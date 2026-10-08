@@ -1,25 +1,25 @@
 // Projects — design/PM Dashboard v3.dc.html (isProjects); empty state from PM Dashboard v31.dc.html.
-import type { Metadata } from "next";
-import { EmptyState } from "@/components/hub/EmptyState";
-import { NewButton } from "@/components/new-button";
-import { ProjectsTable, type ProjectListRow } from "@/components/projects-table";
-import { active, currentVersion, progress } from "@/lib/derive";
-import { fmt } from "@/lib/hub";
-import { listMembers, listProjects } from "@/lib/queries";
-import { requireUserWith } from "@/lib/session";
+import type { Metadata } from 'next';
+import { EmptyState } from '@/components/hub/EmptyState';
+import { NewButton } from '@/components/new-button';
+import { ProjectsTable, type ProjectListRow } from '@/components/projects-table';
+import { active, currentVersion, progress } from '@/lib/derive';
+import { fmt } from '@/lib/hub';
+import { listMembers, listProjects } from '@/lib/queries';
+import { requireUserWith } from '@/lib/session';
 
-export const metadata: Metadata = { title: "Projects · Product Hub" };
+export const metadata: Metadata = { title: 'Projects · Product Hub' };
 
 export default async function ProjectsPage() {
   const [me, [projects, members]] = await requireUserWith(() => Promise.all([listProjects(), listMembers()]));
-  const activeCount = projects.filter((p) => p.status === "Active").length;
+  const activeCount = projects.filter((p) => p.status === 'Active').length;
 
   const rows: ProjectListRow[] = projects.map((p) => {
     const cur = currentVersion(p.versions);
     return {
       id: p.id,
       name: p.name,
-      description: p.description ?? "",
+      description: p.description ?? '',
       status: p.status,
       cur: cur ? { num: cur.num, name: cur.name, target: fmt(cur.target_date), confidence: cur.confidence } : null,
       prog: cur ? progress(active(cur.features)) : 0,

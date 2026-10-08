@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 // design/NoteThread.dc.html — notes composer + list (markdown-lite, lists, attachments, previews).
-import { Fragment, useEffect, useRef, useState } from "react";
-import type { Av } from "@/lib/hub";
-import { Avatar } from "./Avatar";
-import { Button } from "./Button";
+import { Fragment, useEffect, useRef, useState } from 'react';
+import type { Av } from '@/lib/hub';
+import { Avatar } from './Avatar';
+import { Button } from './Button';
 
 export type Attachment = { name: string; size: string; ext: string; url: string; type: string };
 export type Note = { text: string; author: string; when: string; av: Av; atts?: Attachment[] };
@@ -18,10 +18,10 @@ export type Thread = {
 };
 
 const fsz = (b: number) =>
-  b < 1024 ? b + " B" : b < 1048576 ? Math.round(b / 1024) + " KB" : (b / 1048576).toFixed(1) + " MB";
+  b < 1024 ? b + ' B' : b < 1048576 ? Math.round(b / 1024) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
 const extOf = (n: string) => {
-  const m = /\.([a-z0-9]{1,5})$/i.exec(n || "");
-  return (m ? m[1]! : "file").toUpperCase();
+  const m = /\.([a-z0-9]{1,5})$/i.exec(n || '');
+  return (m ? m[1]! : 'file').toUpperCase();
 };
 
 // ---------------------------------------------------------------------------
@@ -35,9 +35,19 @@ function inline(str: string, key: string): React.ReactNode[] {
   let i = 0;
   while ((m = re.exec(str))) {
     if (m.index > last) out.push(str.slice(last, m.index));
-    const k = key + "-" + i++;
-    if (m[2]) out.push(<strong key={k} className="font-semibold">{m[2]}</strong>);
-    else if (m[3]) out.push(<s key={k} className="text-muted">{m[3]}</s>);
+    const k = key + '-' + i++;
+    if (m[2])
+      out.push(
+        <strong key={k} className="font-semibold">
+          {m[2]}
+        </strong>,
+      );
+    else if (m[3])
+      out.push(
+        <s key={k} className="text-muted">
+          {m[3]}
+        </s>,
+      );
     else if (m[4])
       out.push(
         <code
@@ -65,63 +75,63 @@ const NUM_RX = /^\s*\d+[.)]\s+/;
 const BUL_RX = /^\s*[-*•]\s+/;
 const ANY_RX = /^\s*(?:[-*]\s+\[[ xX]\]|[-*•]|\d+[.)])\s+/;
 
-type ListType = "check" | "ul" | "ol";
+type ListType = 'check' | 'ul' | 'ol';
 
 function render(text: string): React.ReactNode[] {
-  const lines = (text || "").split("\n");
-  const blocks: { type: ListType | "p"; key: string; items: React.ReactNode[] }[] = [];
-  let list: { type: ListType | "p"; key: string; items: React.ReactNode[] } | null = null;
+  const lines = (text || '').split('\n');
+  const blocks: { type: ListType | 'p'; key: string; items: React.ReactNode[] }[] = [];
+  let list: { type: ListType | 'p'; key: string; items: React.ReactNode[] } | null = null;
   lines.forEach((ln, i) => {
     const cm = /^\s*[-*]\s+\[([ xX])\]\s+(.*)$/.exec(ln);
     const bm = !cm && /^\s*[-*•]\s+(.*)$/.exec(ln);
     const nm = /^\s*\d+[.)]\s+(.*)$/.exec(ln);
     const lm = cm || bm || nm;
-    const t: ListType = cm ? "check" : bm ? "ul" : "ol";
+    const t: ListType = cm ? 'check' : bm ? 'ul' : 'ol';
     if (lm) {
       if (!list || list.type !== t) {
-        list = { type: t, key: "u" + i, items: [] };
+        list = { type: t, key: 'u' + i, items: [] };
         blocks.push(list);
       }
       if (cm) {
-        const done = cm[1] !== " ";
+        const done = cm[1] !== ' ';
         list.items.push(
           <li key={i} className="flex items-start gap-[7px]">
             <span
               className="mt-[3px] size-[13px] flex-none rounded-[3px] text-center text-[9px] leading-[10px] text-white"
               style={{
-                border: "1.5px solid " + (done ? "var(--ink)" : "var(--border-strong)"),
-                background: done ? "var(--ink)" : "transparent",
+                border: '1.5px solid ' + (done ? 'var(--ink)' : 'var(--border-strong)'),
+                background: done ? 'var(--ink)' : 'transparent',
               }}
             >
-              {done ? "✓" : ""}
+              {done ? '✓' : ''}
             </span>
-            <span className={done ? "text-muted line-through" : undefined}>{inline(cm[2]!, "l" + i)}</span>
+            <span className={done ? 'text-muted line-through' : undefined}>{inline(cm[2]!, 'l' + i)}</span>
           </li>,
         );
       } else {
-        list.items.push(<li key={i}>{inline(lm[1]!, "l" + i)}</li>);
+        list.items.push(<li key={i}>{inline(lm[1]!, 'l' + i)}</li>);
       }
     } else {
       list = null;
       blocks.push({
-        type: "p",
+        type: 'p',
         key: String(i),
         items: [
-          <div key={i} style={{ minHeight: ln ? undefined : "0.6em" }}>
-            {inline(ln, "p" + i)}
+          <div key={i} style={{ minHeight: ln ? undefined : '0.6em' }}>
+            {inline(ln, 'p' + i)}
           </div>,
         ],
       });
     }
   });
   return blocks.map((b) => {
-    if (b.type === "p") return <Fragment key={b.key}>{b.items}</Fragment>;
+    if (b.type === 'p') return <Fragment key={b.key}>{b.items}</Fragment>;
     const style: React.CSSProperties = {
-      margin: "2px 0",
-      paddingLeft: b.type === "check" ? 0 : b.type === "ol" ? 20 : 18,
-      listStyle: b.type === "check" ? "none" : b.type === "ol" ? "decimal" : "disc",
+      margin: '2px 0',
+      paddingLeft: b.type === 'check' ? 0 : b.type === 'ol' ? 20 : 18,
+      listStyle: b.type === 'check' ? 'none' : b.type === 'ol' ? 'decimal' : 'disc',
     };
-    return b.type === "ol" ? (
+    return b.type === 'ol' ? (
       <ol key={b.key} style={style}>
         {b.items}
       </ol>
@@ -134,26 +144,34 @@ function render(text: string): React.ReactNode[] {
 }
 
 const previewKind = (a: Attachment) => {
-  if (!a.url || a.url === "#") return "none";
-  const t = a.type || "";
-  const x = (a.ext || "").toLowerCase();
-  if (t.startsWith("image/") || /^(png|jpe?g|gif|webp|svg|bmp|avif)$/.test(x)) return "img";
+  if (!a.url || a.url === '#') return 'none';
+  const t = a.type || '';
+  const x = (a.ext || '').toLowerCase();
+  if (t.startsWith('image/') || /^(png|jpe?g|gif|webp|svg|bmp|avif)$/.test(x)) return 'img';
   if (
-    t === "application/pdf" ||
-    t.startsWith("text/") ||
-    t.startsWith("video/") ||
-    t.startsWith("audio/") ||
+    t === 'application/pdf' ||
+    t.startsWith('text/') ||
+    t.startsWith('video/') ||
+    t.startsWith('audio/') ||
     /^(pdf|txt|md|csv|json|mp4|webm|mp3|wav|html?)$/.test(x)
   )
-    return "frame";
-  return "none";
+    return 'frame';
+  return 'none';
 };
 
 // ---------------------------------------------------------------------------
 // Icons
 // ---------------------------------------------------------------------------
 const BulletsIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.4"
+    strokeLinecap="round"
+  >
     <circle cx="3" cy="4" r="1.1" fill="currentColor" stroke="none" />
     <circle cx="3" cy="8" r="1.1" fill="currentColor" stroke="none" />
     <circle cx="3" cy="12" r="1.1" fill="currentColor" stroke="none" />
@@ -161,28 +179,45 @@ const BulletsIcon = () => (
   </svg>
 );
 const NumberedIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.4"
+    strokeLinecap="round"
+  >
     <path d="M2.2 2.8l1-.6v3.6" strokeWidth="1.2" />
     <path d="M6.5 4h7M6.5 8h7M6.5 12h7" />
   </svg>
 );
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M1.8 4.2l1.3 1.3 2.3-2.6" />
     <path d="M6.5 4h7M6.5 8h7M6.5 12h7" />
   </svg>
 );
 
 const toolBtn =
-  "h-[26px] w-[26px] cursor-pointer rounded-[5px] border-0 bg-transparent text-[13px] text-ink-3 hover:bg-hover hover:text-ink";
+  'h-[26px] w-[26px] cursor-pointer rounded-[5px] border-0 bg-transparent text-[13px] text-ink-3 hover:bg-hover hover:text-ink';
 const menuItem =
-  "flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md border-0 bg-transparent px-2.5 text-left text-[13px] text-ink hover:bg-hover";
+  'flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md border-0 bg-transparent px-2.5 text-left text-[13px] text-ink hover:bg-hover';
 const keep = (e: React.MouseEvent) => e.preventDefault();
 
 type Pending = Attachment & { id: string };
 
 export function NoteThread({ thread }: { thread?: Thread }) {
-  const [localDraft, setLocalDraft] = useState("");
+  const [localDraft, setLocalDraft] = useState('');
   const [localNotes, setLocalNotes] = useState<Note[]>([]);
   const [pending, setPending] = useState<Pending[]>([]);
   const [listOpen, setListOpen] = useState(false);
@@ -191,13 +226,13 @@ export function NoteThread({ thread }: { thread?: Thread }) {
 
   useEffect(() => {
     const esc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPv(null);
+      if (e.key === 'Escape') setPv(null);
     };
-    window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
   }, []);
 
-  const draft = thread ? thread.draft || "" : localDraft;
+  const draft = thread ? thread.draft || '' : localDraft;
   const setDraft = (v: string) => (thread ? thread.onDraft(v) : setLocalDraft(v));
   const later = (fn: () => void) => setTimeout(fn, 0);
 
@@ -221,18 +256,18 @@ export function NoteThread({ thread }: { thread?: Thread }) {
     const v = draft;
     const a = el ? el.selectionStart : v.length;
     const b = el ? el.selectionEnd : v.length;
-    const s0 = v.lastIndexOf("\n", a - 1) + 1;
-    let e0 = v.indexOf("\n", b);
+    const s0 = v.lastIndexOf('\n', a - 1) + 1;
+    let e0 = v.indexOf('\n', b);
     if (e0 < 0) e0 = v.length;
-    const seg = v.slice(s0, e0).split("\n");
-    const kindOf = (l: string) => (CK_RX.test(l) ? "check" : NUM_RX.test(l) ? "ol" : BUL_RX.test(l) ? "ul" : null);
+    const seg = v.slice(s0, e0).split('\n');
+    const kindOf = (l: string) => (CK_RX.test(l) ? 'check' : NUM_RX.test(l) ? 'ol' : BUL_RX.test(l) ? 'ul' : null);
     const all = seg.every((l) => kindOf(l) === type);
     const ns = seg
       .map((l, i) => {
-        const bare = l.replace(ANY_RX, "");
-        return all ? bare : (type === "ol" ? i + 1 + ". " : type === "check" ? "- [ ] " : "- ") + bare;
+        const bare = l.replace(ANY_RX, '');
+        return all ? bare : (type === 'ol' ? i + 1 + '. ' : type === 'check' ? '- [ ] ' : '- ') + bare;
       })
-      .join("\n");
+      .join('\n');
     setDraft(v.slice(0, s0) + ns + v.slice(e0));
     later(() => {
       if (ta.current) {
@@ -252,10 +287,10 @@ export function NoteThread({ thread }: { thread?: Thread }) {
     }
     const x = draft.trim();
     if (!x && !atts.length) return;
-    setLocalDraft("");
+    setLocalDraft('');
     setPending([]);
     setLocalNotes((ns) => [
-      { text: x, atts, author: "You", when: "just now", av: { i: "Y", bg: "var(--hover)", fg: "var(--ink-3)" } },
+      { text: x, atts, author: 'You', when: 'just now', av: { i: 'Y', bg: 'var(--hover)', fg: 'var(--ink-3)' } },
       ...ns,
     ]);
   }
@@ -263,11 +298,11 @@ export function NoteThread({ thread }: { thread?: Thread }) {
   function onKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     const m = e.metaKey || e.ctrlKey;
     const el = ta.current;
-    if (e.key === "Enter" && !m && !e.shiftKey && el) {
+    if (e.key === 'Enter' && !m && !e.shiftKey && el) {
       const v = draft;
       const a = el.selectionStart;
       if (a === el.selectionEnd) {
-        const s0 = v.lastIndexOf("\n", a - 1) + 1;
+        const s0 = v.lastIndexOf('\n', a - 1) + 1;
         const line = v.slice(s0, a);
         const pm = /^(\s*)(?:([-*])\s+\[[ xX]\]|([-*•])|(\d+)[.)])\s+/.exec(line);
         if (pm) {
@@ -278,8 +313,8 @@ export function NoteThread({ thread }: { thread?: Thread }) {
             later(() => ta.current?.setSelectionRange(s0, s0));
             return;
           }
-          const nx = pm[1] + (pm[2] ? "- [ ] " : pm[4] ? +pm[4] + 1 + ". " : "- ");
-          setDraft(v.slice(0, a) + "\n" + nx + v.slice(a));
+          const nx = pm[1] + (pm[2] ? '- [ ] ' : pm[4] ? +pm[4] + 1 + '. ' : '- ');
+          setDraft(v.slice(0, a) + '\n' + nx + v.slice(a));
           const c = a + 1 + nx.length;
           later(() => ta.current?.setSelectionRange(c, c));
           return;
@@ -288,18 +323,18 @@ export function NoteThread({ thread }: { thread?: Thread }) {
     }
     if (!m) return;
     const k = e.key.toLowerCase();
-    if (e.shiftKey && (e.code === "Digit8" || e.code === "Digit7" || e.code === "Digit9")) {
+    if (e.shiftKey && (e.code === 'Digit8' || e.code === 'Digit7' || e.code === 'Digit9')) {
       e.preventDefault();
-      list(e.code === "Digit8" ? "ul" : e.code === "Digit7" ? "ol" : "check");
+      list(e.code === 'Digit8' ? 'ul' : e.code === 'Digit7' ? 'ol' : 'check');
       return;
     }
-    if (k === "b") {
+    if (k === 'b') {
       e.preventDefault();
-      wrap("**", "**", "bold");
-    } else if (k === "i") {
+      wrap('**', '**', 'bold');
+    } else if (k === 'i') {
       e.preventDefault();
-      wrap("_", "_", "italic");
-    } else if (k === "enter") {
+      wrap('_', '_', 'italic');
+    } else if (k === 'enter') {
       e.preventDefault();
       submit();
     }
@@ -307,7 +342,7 @@ export function NoteThread({ thread }: { thread?: Thread }) {
 
   function onFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = [...(e.target.files || [])];
-    e.target.value = "";
+    e.target.value = '';
     if (!files.length) return;
     setPending((p) => [
       ...p,
@@ -317,13 +352,13 @@ export function NoteThread({ thread }: { thread?: Thread }) {
         size: fsz(f.size),
         ext: extOf(f.name),
         url: URL.createObjectURL(f),
-        type: f.type || "",
+        type: f.type || '',
       })),
     ]);
   }
 
   const notes = thread ? thread.notes || [] : localNotes;
-  const kind = pv ? previewKind(pv) : "";
+  const kind = pv ? previewKind(pv) : '';
 
   return (
     <div className="flex flex-col gap-2">
@@ -360,13 +395,19 @@ export function NoteThread({ thread }: { thread?: Thread }) {
           </div>
         )}
         <div className="flex items-center gap-0.5 border-t border-border-subtle bg-surface-sunken px-1.5 py-1">
-          <button type="button" onMouseDown={keep} onClick={() => wrap("**", "**", "bold")} title="Bold (⌘B)" className={`${toolBtn} font-bold`}>
+          <button
+            type="button"
+            onMouseDown={keep}
+            onClick={() => wrap('**', '**', 'bold')}
+            title="Bold (⌘B)"
+            className={`${toolBtn} font-bold`}
+          >
             B
           </button>
           <button
             type="button"
             onMouseDown={keep}
-            onClick={() => wrap("_", "_", "italic")}
+            onClick={() => wrap('_', '_', 'italic')}
             title="Italic (⌘I)"
             className={`${toolBtn} font-[Georgia,serif] italic`}
           >
@@ -375,7 +416,7 @@ export function NoteThread({ thread }: { thread?: Thread }) {
           <button
             type="button"
             onMouseDown={keep}
-            onClick={() => wrap("~~", "~~", "text")}
+            onClick={() => wrap('~~', '~~', 'text')}
             title="Strikethrough"
             className={`${toolBtn} line-through`}
           >
@@ -389,11 +430,20 @@ export function NoteThread({ thread }: { thread?: Thread }) {
               onClick={() => setListOpen((o) => !o)}
               title="Insert list"
               className={`inline-flex h-[26px] cursor-pointer items-center gap-[3px] rounded-[5px] border-0 pr-[5px] pl-1.5 text-ink-3 hover:bg-hover hover:text-ink ${
-                listOpen ? "bg-hover" : "bg-transparent"
+                listOpen ? 'bg-hover' : 'bg-transparent'
               }`}
             >
               <BulletsIcon />
-              <svg width="9" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="9"
+                height="6"
+                viewBox="0 0 10 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M1 1l4 4 4-4" />
               </svg>
             </button>
@@ -409,9 +459,9 @@ export function NoteThread({ thread }: { thread?: Thread }) {
                 <div className="absolute bottom-[30px] left-0 z-[41] flex w-[228px] flex-col gap-px rounded-xl border border-border bg-surface p-[5px] shadow-[0_8px_24px_rgba(20,20,15,0.12),0_1px_3px_rgba(20,20,15,0.06)]">
                   {(
                     [
-                      ["ul", "Bulleted list", "⌘⇧8", <BulletsIcon key="i" />],
-                      ["ol", "Numbered list", "⌘⇧7", <NumberedIcon key="i" />],
-                      ["check", "Checklist", "⌘⇧9", <CheckIcon key="i" />],
+                      ['ul', 'Bulleted list', '⌘⇧8', <BulletsIcon key="i" />],
+                      ['ol', 'Numbered list', '⌘⇧7', <NumberedIcon key="i" />],
+                      ['check', 'Checklist', '⌘⇧9', <CheckIcon key="i" />],
                     ] as const
                   ).map(([type, label, sc, icon]) => (
                     <button
@@ -459,10 +509,10 @@ export function NoteThread({ thread }: { thread?: Thread }) {
                 {nt.atts.map((at, j) => (
                   <a
                     key={j}
-                    href={at.url || "#"}
+                    href={at.url || '#'}
                     onClick={(e) => {
                       e.preventDefault();
-                      setPv({ ...at, url: at.url || "#" });
+                      setPv({ ...at, url: at.url || '#' });
                     }}
                     className="inline-flex h-[26px] max-w-[240px] cursor-pointer items-center gap-1.5 rounded-sm border border-border bg-surface px-2 text-[12px] text-ink-2 no-underline hover:border-border-strong hover:bg-surface-hover"
                   >
@@ -509,18 +559,18 @@ export function NoteThread({ thread }: { thread?: Thread }) {
               </button>
             </div>
             <div className="flex min-h-0 flex-1 items-center justify-center bg-surface-sunken">
-              {kind === "img" && (
+              {kind === 'img' && (
                 // eslint-disable-next-line @next/next/no-img-element -- user attachments, any origin
                 <img src={pv.url} alt={pv.name} className="block max-h-full max-w-full object-contain" />
               )}
-              {kind === "frame" && <iframe src={pv.url} title={pv.name} className="size-full border-0 bg-white" />}
-              {kind === "none" && (
+              {kind === 'frame' && <iframe src={pv.url} title={pv.name} className="size-full border-0 bg-white" />}
+              {kind === 'none' && (
                 <div className="flex flex-col gap-1.5 text-center text-[13px] text-muted">
                   <span className="font-semibold text-ink">No preview available</span>
                   <span>
-                    {pv.url && pv.url !== "#"
-                      ? "Download the file to open it."
-                      : "This file is no longer available — attachments are kept only for this session."}
+                    {pv.url && pv.url !== '#'
+                      ? 'Download the file to open it.'
+                      : 'This file is no longer available — attachments are kept only for this session.'}
                   </span>
                 </div>
               )}

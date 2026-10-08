@@ -1,5 +1,5 @@
 // design/Confidence.dc.html — ship confidence, toned by thresholds.
-import { CONF_HIGH, CONF_LOW, confTone } from "@/lib/hub";
+import { CONF_HIGH, CONF_LOW, confTone } from '@/lib/hub';
 
 export function Confidence({
   value = 60,

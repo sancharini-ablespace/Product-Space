@@ -1,12 +1,12 @@
 // Row types for the Product Hub schema (supabase/migrations/20261008000000_product_hub.sql).
 
-export const PROJECT_STATUSES = ["Planned", "Active", "Completed"] as const;
-export const VERSION_STATUSES = ["Planned", "In Progress", "Completed"] as const;
-export const FEATURE_STATUSES = ["Planned", "In Progress", "Blocked", "Completed"] as const;
-export const PRIORITIES = ["High", "Medium", "Low"] as const;
-export const RESEARCH_STATUSES = ["To research", "Researching", "Reviewed"] as const;
-export const ACTIVITY_TYPES = ["completed", "status", "assigned", "feature", "confidence", "note", "due"] as const;
-export const FILTER_FIELDS = ["project", "version", "status", "owner", "poc", "priority"] as const;
+export const PROJECT_STATUSES = ['Planned', 'Active', 'Completed'] as const;
+export const VERSION_STATUSES = ['Planned', 'In Progress', 'Completed'] as const;
+export const FEATURE_STATUSES = ['Planned', 'In Progress', 'Blocked', 'Completed'] as const;
+export const PRIORITIES = ['High', 'Medium', 'Low'] as const;
+export const RESEARCH_STATUSES = ['To research', 'Researching', 'Reviewed'] as const;
+export const ACTIVITY_TYPES = ['completed', 'status', 'assigned', 'feature', 'confidence', 'note', 'due'] as const;
+export const FILTER_FIELDS = ['project', 'version', 'status', 'owner', 'poc', 'priority'] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 export type VersionStatus = (typeof VERSION_STATUSES)[number];
@@ -119,10 +119,10 @@ export type Note = {
 };
 
 export type NoteParent =
-  | { kind: "project"; id: string }
-  | { kind: "version"; id: string }
-  | { kind: "feature"; id: string }
-  | { kind: "research"; id: string };
+  | { kind: 'project'; id: string }
+  | { kind: 'version'; id: string }
+  | { kind: 'feature'; id: string }
+  | { kind: 'research'; id: string };
 
 export type Activity = {
   id: string;
@@ -135,7 +135,7 @@ export type Activity = {
   created_at: string;
 };
 
-export type FilterRule = { field: FilterField; op: "is" | "not"; value: string };
+export type FilterRule = { field: FilterField; op: 'is' | 'not'; value: string };
 
 export type SavedFilter = {
   id: string;

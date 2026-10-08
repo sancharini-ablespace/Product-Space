@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
 // Project page "Versions" tab — design/PM Dashboard v3.dc.html (tabVersions / pjVersions).
-import { useEffect, useState, useTransition } from "react";
-import { Button } from "@/components/hub/Button";
-import { Confidence } from "@/components/hub/Confidence";
-import { MoreButton } from "@/components/hub/MoreButton";
-import { PeopleButton } from "@/components/hub/PeopleButton";
-import { PrioritySelect, type Priority } from "@/components/hub/PrioritySelect";
-import { ProgressBar } from "@/components/hub/ProgressBar";
-import { StatusSelect } from "@/components/hub/StatusSelect";
-import { LiveNoteThread } from "@/components/live-note-thread";
-import { anchorOf } from "@/components/popovers";
-import { setConfidence } from "@/lib/actions";
-import { progress } from "@/lib/derive";
-import { ST_TONE, T, confTone, fmt, memberAv, memberName, sortFeatures } from "@/lib/hub";
-import type { FeatureRow } from "@/lib/queries";
-import type { ProjectHandlers, VersionView } from "./types";
+import { useEffect, useState, useTransition } from 'react';
+import { Button } from '@/components/hub/Button';
+import { Confidence } from '@/components/hub/Confidence';
+import { MoreButton } from '@/components/hub/MoreButton';
+import { PeopleButton } from '@/components/hub/PeopleButton';
+import { PrioritySelect, type Priority } from '@/components/hub/PrioritySelect';
+import { ProgressBar } from '@/components/hub/ProgressBar';
+import { StatusSelect } from '@/components/hub/StatusSelect';
+import { LiveNoteThread } from '@/components/live-note-thread';
+import { anchorOf } from '@/components/popovers';
+import { setConfidence } from '@/lib/actions';
+import { progress } from '@/lib/derive';
+import { ST_TONE, T, confTone, fmt, memberAv, memberName, sortFeatures } from '@/lib/hub';
+import type { FeatureRow } from '@/lib/queries';
+import type { ProjectHandlers, VersionView } from './types';
 
-const ROW_COLS = "grid-cols-[16px_minmax(240px,1fr)_124px_140px_96px_72px_64px_48px]";
-const FEAT_COLS = "grid-cols-[minmax(150px,1fr)_112px_72px_minmax(96px,140px)_auto_28px]";
-const BREAKDOWN = ["Completed", "In Progress", "Blocked", "Planned"] as const;
+const ROW_COLS = 'grid-cols-[16px_minmax(240px,1fr)_124px_140px_96px_72px_64px_48px]';
+const FEAT_COLS = 'grid-cols-[minmax(150px,1fr)_112px_72px_minmax(96px,140px)_auto_28px]';
+const BREAKDOWN = ['Completed', 'In Progress', 'Blocked', 'Planned'] as const;
 
-const Chevron = ({ d = "M3.5 2 L6.5 5 L3.5 8", color = "currentColor" }: { d?: string; color?: string }) => (
+const Chevron = ({ d = 'M3.5 2 L6.5 5 L3.5 8', color = 'currentColor' }: { d?: string; color?: string }) => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
     <path d={d} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
@@ -77,13 +77,13 @@ export function ProjectVersions({
   useEffect(() => {
     if (!editingConf) return;
     // Prototype: Esc closes the confidence editor (popovers such as the date picker close first).
-    const k = (e: KeyboardEvent) => e.key === "Escape" && setConf(null);
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
+    const k = (e: KeyboardEvent) => e.key === 'Escape' && setConf(null);
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
   }, [editingConf]);
 
   const openConf = (v: VersionView) => {
-    setConf({ id: v.id, val: v.confidence, reason: "", err: false });
+    setConf({ id: v.id, val: v.confidence, reason: '', err: false });
     expand(v.id);
     setSideCol((s) => ({ ...s, [v.id]: false }));
   };
@@ -100,7 +100,9 @@ export function ProjectVersions({
   return (
     <div className="overflow-x-auto rounded-lg border border-border bg-surface">
       <div className="min-w-[930px]">
-        <div className={`grid ${ROW_COLS} gap-3 border-b border-border bg-surface-sunken px-4 py-[9px] text-[12px] font-medium text-faint`}>
+        <div
+          className={`grid ${ROW_COLS} gap-3 border-b border-border bg-surface-sunken px-4 py-[9px] text-[12px] font-medium text-faint`}
+        >
           <span />
           <span>Version</span>
           <span>Status</span>
@@ -112,15 +114,17 @@ export function ProjectVersions({
         </div>
         {versions.map((v) => {
           const fs = featsOfV(v.id);
-          const done = fs.filter((f) => f.status === "Completed").length;
+          const done = fs.filter((f) => f.status === 'Completed').length;
           const prog = progress(fs);
           const cf = T[confTone(v.confidence)];
           const expanded = !!exp[v.id];
           const editing = conf?.id === v.id;
           const sideOpen = !sideCol[v.id];
-          const counts = BREAKDOWN.map((k) => ({ label: k, count: fs.filter((f) => f.status === k).length, dot: T[ST_TONE[k]!].dot })).filter(
-            (x) => x.count,
-          );
+          const counts = BREAKDOWN.map((k) => ({
+            label: k,
+            count: fs.filter((f) => f.status === k).length,
+            dot: T[ST_TONE[k]!].dot,
+          })).filter((x) => x.count);
           return (
             <div key={v.id} className="border-b border-border">
               <div
@@ -129,7 +133,7 @@ export function ProjectVersions({
               >
                 <span
                   className="flex size-4 items-center justify-center text-faint transition-transform duration-[120ms]"
-                  style={{ transform: expanded ? "rotate(90deg)" : "none" }}
+                  style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}
                 >
                   <Chevron />
                 </span>
@@ -137,7 +141,11 @@ export function ProjectVersions({
                   Version {v.num} — {v.name}
                 </div>
                 <div onClick={(e) => e.stopPropagation()}>
-                  <StatusSelect kind="version" value={v.status} onChange={(e) => h.setVersion(v.id, { status: e.target.value })} />
+                  <StatusSelect
+                    kind="version"
+                    value={v.status}
+                    onChange={(e) => h.setVersion(v.id, { status: e.target.value })}
+                  />
                 </div>
                 <ProgressBar value={prog} maxWidth={90} />
                 <Confidence value={v.confidence} onClick={() => openConf(v)} />
@@ -146,17 +154,22 @@ export function ProjectVersions({
                   className="relative -ml-[7px] inline-flex w-fit rounded-[5px] border border-transparent px-1.5 py-0.5 text-ink-2 hover:border-border-strong hover:bg-surface"
                 >
                   {fmt(v.target_date)}
-                  <span onClick={(e) => h.openTargetPicker(v.id, anchorOf(e.currentTarget))} className="absolute inset-0 cursor-pointer" />
+                  <span
+                    onClick={(e) => h.openTargetPicker(v.id, anchorOf(e.currentTarget))}
+                    className="absolute inset-0 cursor-pointer"
+                  />
                 </div>
                 <span className="tabular-nums">{fs.length}</span>
-                <span className="tabular-nums">{fs.filter((f) => f.status !== "Completed").length}</span>
+                <span className="tabular-nums">{fs.filter((f) => f.status !== 'Completed').length}</span>
               </div>
 
               {expanded && (
                 <div className="flex flex-wrap border-t border-hover bg-surface-sunken">
                   <div className="flex min-w-0 flex-[1_1_600px] flex-col gap-4 pt-4 pr-5 pb-5 pl-11">
                     <div>
-                      <div className="mb-1 text-xs font-semibold tracking-[0.05em] text-faint uppercase">About this version</div>
+                      <div className="mb-1 text-xs font-semibold tracking-[0.05em] text-faint uppercase">
+                        About this version
+                      </div>
                       <VersionDescription
                         v={v}
                         h={h}
@@ -169,7 +182,9 @@ export function ProjectVersions({
                         <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-2">
                           <div className="flex items-baseline gap-2">
                             <span className="text-lg font-semibold">Features</span>
-                            <span className="text-sm text-faint tabular-nums">{fs.length ? `${done} of ${fs.length} completed` : ""}</span>
+                            <span className="text-sm text-faint tabular-nums">
+                              {fs.length ? `${done} of ${fs.length} completed` : ''}
+                            </span>
                           </div>
                           {fs.length > 0 && (
                             <div className="flex max-w-[420px] flex-col gap-1.5">
@@ -194,12 +209,19 @@ export function ProjectVersions({
                             </div>
                           )}
                         </div>
-                        <Button label="+ Add feature" variant="secondary" size="sm" onClick={() => h.addFeature(v.id)} />
+                        <Button
+                          label="+ Add feature"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => h.addFeature(v.id)}
+                        />
                       </div>
                       {fs.length > 0 ? (
                         <div className="overflow-x-auto">
                           <div className="min-w-[620px]">
-                            <div className={`grid ${FEAT_COLS} gap-2.5 border-b border-border-subtle bg-surface-sunken px-3 py-[7px] text-sm font-medium text-faint`}>
+                            <div
+                              className={`grid ${FEAT_COLS} gap-2.5 border-b border-border-subtle bg-surface-sunken px-3 py-[7px] text-sm font-medium text-faint`}
+                            >
                               <span>Feature</span>
                               <span>Status</span>
                               <span>Priority</span>
@@ -216,14 +238,18 @@ export function ProjectVersions({
                                 <div className="min-w-0">
                                   <div
                                     className="truncate font-semibold"
-                                    style={{ color: f.status === "Completed" ? "var(--faint)" : "var(--ink)" }}
+                                    style={{ color: f.status === 'Completed' ? 'var(--faint)' : 'var(--ink)' }}
                                   >
                                     {f.name}
                                   </div>
-                                  <div className="truncate text-[12px] text-faint">{f.description ?? ""}</div>
+                                  <div className="truncate text-[12px] text-faint">{f.description ?? ''}</div>
                                 </div>
                                 <div onClick={(e) => e.stopPropagation()}>
-                                  <StatusSelect kind="feature" value={f.status} onChange={(e) => h.setFeature(f.id, { status: e.target.value })} />
+                                  <StatusSelect
+                                    kind="feature"
+                                    value={f.status}
+                                    onChange={(e) => h.setFeature(f.id, { status: e.target.value })}
+                                  />
                                 </div>
                                 <div onClick={(e) => e.stopPropagation()}>
                                   <PrioritySelect
@@ -234,12 +260,12 @@ export function ProjectVersions({
                                 <PeopleButton
                                   people={f.owners.map((o) => ({ ...memberAv(o), name: memberName(o) }))}
                                   max={4}
-                                  label={f.owners.length ? "" : "Add owner"}
+                                  label={f.owners.length ? '' : 'Add owner'}
                                   labelColor="var(--fainter)"
                                   size="md"
                                   edge="start"
                                   title="Edit owners"
-                                  onClick={(e) => h.openFeaturePicker(f.id, "owners", anchorOf(e.currentTarget))}
+                                  onClick={(e) => h.openFeaturePicker(f.id, 'owners', anchorOf(e.currentTarget))}
                                 />
                                 <PeopleButton
                                   people={f.watchers.map((w) => ({ ...memberAv(w), name: memberName(w) }))}
@@ -249,9 +275,12 @@ export function ProjectVersions({
                                   size="md"
                                   edge="end"
                                   title="Edit watchers"
-                                  onClick={(e) => h.openFeaturePicker(f.id, "watchers", anchorOf(e.currentTarget))}
+                                  onClick={(e) => h.openFeaturePicker(f.id, 'watchers', anchorOf(e.currentTarget))}
                                 />
-                                <MoreButton active={h.menuFor === f.id} onClick={(e) => h.openMenu(f.id, anchorOf(e.currentTarget))} />
+                                <MoreButton
+                                  active={h.menuFor === f.id}
+                                  onClick={(e) => h.openMenu(f.id, anchorOf(e.currentTarget))}
+                                />
                               </div>
                             ))}
                           </div>
@@ -261,10 +290,16 @@ export function ProjectVersions({
                           <div>
                             <div className="text-base font-semibold">No features yet</div>
                             <div className="mt-0.5 max-w-[420px] text-md leading-[1.45] text-faint">
-                              Break this version into the things it will ship. Each feature gets a POC, status and watchers.
+                              Break this version into the things it will ship. Each feature gets a POC, status and
+                              watchers.
                             </div>
                           </div>
-                          <Button label="+ Add first feature" variant="primary" size="sm" onClick={() => h.addFeature(v.id)} />
+                          <Button
+                            label="+ Add first feature"
+                            variant="primary"
+                            size="sm"
+                            onClick={() => h.addFeature(v.id)}
+                          />
                         </div>
                       )}
                     </div>
@@ -274,9 +309,13 @@ export function ProjectVersions({
                     <div className="flex max-w-full min-w-0 flex-[1_1_280px] flex-col gap-5 border-l border-hover px-[18px] pt-3.5 pb-[18px]">
                       <div>
                         <div className="flex min-h-[26px] items-center justify-between">
-                          <span className="text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase">Confidence</span>
+                          <span className="text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase">
+                            Confidence
+                          </span>
                           <span className="flex items-center gap-1">
-                            {!editing && <Button label="Update" variant="secondary" size="sm" onClick={() => openConf(v)} />}
+                            {!editing && (
+                              <Button label="Update" variant="secondary" size="sm" onClick={() => openConf(v)} />
+                            )}
                             <button
                               type="button"
                               title="Collapse panel"
@@ -288,7 +327,10 @@ export function ProjectVersions({
                           </span>
                         </div>
                         <div className="mt-1.5 flex items-baseline gap-2">
-                          <span className="text-[28px] font-semibold tracking-[-0.02em] tabular-nums" style={{ color: cf.fg }}>
+                          <span
+                            className="text-[28px] font-semibold tracking-[-0.02em] tabular-nums"
+                            style={{ color: cf.fg }}
+                          >
                             {v.confidence}%
                           </span>
                           <span className="text-[12px] text-faint">to ship by {fmt(v.target_date)}</span>
@@ -308,7 +350,9 @@ export function ProjectVersions({
                                 onChange={(e) => setConf({ ...conf, val: +e.target.value })}
                                 className="flex-1 accent-[var(--ink)]"
                               />
-                              <span className="min-w-10 text-right text-[14px] font-semibold tabular-nums">{conf.val}%</span>
+                              <span className="min-w-10 text-right text-[14px] font-semibold tabular-nums">
+                                {conf.val}%
+                              </span>
                             </div>
                             <textarea
                               value={conf.reason}
@@ -317,7 +361,9 @@ export function ProjectVersions({
                               placeholder="Why is it changing? (required)"
                               className="w-full resize-y rounded-md border border-border-strong px-2.5 py-2 text-[13px] leading-[1.45] outline-none focus:border-fainter"
                             />
-                            {conf.err && <div className="text-[12px] text-tone-red-fg">Add a reason so the team knows why.</div>}
+                            {conf.err && (
+                              <div className="text-[12px] text-tone-red-fg">Add a reason so the team knows why.</div>
+                            )}
                             <div className="flex justify-end gap-1.5">
                               <Button label="Cancel" variant="ghost" size="sm" onClick={() => setConf(null)} />
                               <Button label="Save" variant="primary" size="sm" onClick={saveConf} />
@@ -332,7 +378,11 @@ export function ProjectVersions({
                                   className="text-md font-semibold tabular-nums"
                                   style={{
                                     color:
-                                      x.from == null || x.to === x.from ? "var(--ink-3)" : x.to > x.from ? T.green.fg : T.red.fg,
+                                      x.from == null || x.to === x.from
+                                        ? 'var(--ink-3)'
+                                        : x.to > x.from
+                                          ? T.green.fg
+                                          : T.red.fg,
                                   }}
                                 >
                                   {x.from == null ? `Set to ${x.to}%` : `${x.from}% → ${x.to}%`}
@@ -347,7 +397,9 @@ export function ProjectVersions({
                         </div>
                       </div>
                       <div>
-                        <div className="mb-2 text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase">Notes</div>
+                        <div className="mb-2 text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase">
+                          Notes
+                        </div>
                         <LiveNoteThread kind="version" id={v.id} notes={v.notes} me={h.me} />
                       </div>
                     </div>

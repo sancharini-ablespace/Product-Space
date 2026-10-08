@@ -1,13 +1,13 @@
-import "server-only";
-import bcrypt from "bcryptjs";
-import { db } from "./supabase";
+import 'server-only';
+import bcrypt from 'bcryptjs';
+import { db } from './supabase';
 
-export const allowedDomain = (process.env.ALLOWED_EMAIL_DOMAIN ?? "ablespace.io").toLowerCase();
+export const allowedDomain = (process.env.ALLOWED_EMAIL_DOMAIN ?? 'ablespace.io').toLowerCase();
 
 /** Emails that may set up an account without an invite (bootstraps the first users). */
 const adminEmails = new Set(
-  (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
+  (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean),
 );
@@ -36,7 +36,7 @@ export const isAdminEmail = (email: string) => adminEmails.has(normalizeEmail(em
 export const hashPassword = (password: string) => bcrypt.hash(password, 12);
 
 // Compared against when the email is unknown, so response time doesn't reveal which emails exist.
-const DUMMY_HASH = "$2b$12$ue.rF0BoDBR1ArXuuUWTaueTiAe/lQaqr4RGnKrqbtlw5hdFORDBa";
+const DUMMY_HASH = '$2b$12$ue.rF0BoDBR1ArXuuUWTaueTiAe/lQaqr4RGnKrqbtlw5hdFORDBa';
 
 type AccountRow = {
   id: string;
@@ -50,9 +50,9 @@ type AccountRow = {
 
 export async function findAccount(email: string): Promise<AccountRow | null> {
   const { data, error } = await db()
-    .from("users")
-    .select("id, email, name, image, password_hash, invite_role, activated_at")
-    .eq("email", normalizeEmail(email))
+    .from('users')
+    .select('id, email, name, image, password_hash, invite_role, activated_at')
+    .eq('email', normalizeEmail(email))
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data;

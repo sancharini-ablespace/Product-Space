@@ -1,5 +1,5 @@
 // design/Avatar.dc.html
-import type { Av } from "@/lib/hub";
+import type { Av } from '@/lib/hub';
 
 export function Avatar({
   av,
@@ -19,20 +19,20 @@ export function Avatar({
   const a = av ?? ({} as Partial<Av>);
   return (
     <span
-      title={title || a.name || ""}
+      title={title || a.name || ''}
       style={{
         width: size,
         height: size,
-        borderRadius: square ? "var(--r-sm)" : "50%",
-        background: a.bg || "var(--hover)",
-        color: a.fg || "var(--faint)",
-        border: ring ? "2px solid var(--surface)" : 0,
+        borderRadius: square ? 'var(--r-sm)' : '50%',
+        background: a.bg || 'var(--hover)',
+        color: a.fg || 'var(--faint)',
+        border: ring ? '2px solid var(--surface)' : 0,
         marginLeft: overlap ? -6 : 0,
         fontSize: Math.round(size * 0.5),
       }}
       className="inline-flex shrink-0 items-center justify-center font-semibold"
     >
-      {a.i || ""}
+      {a.i || ''}
     </span>
   );
 }

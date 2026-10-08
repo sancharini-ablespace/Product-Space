@@ -13,7 +13,7 @@ export function MoreButton({
         onClick={onClick}
         title="More actions"
         className={`flex size-[26px] cursor-pointer items-center justify-center rounded-sm border-0 p-0 text-muted hover:bg-hover! hover:text-ink ${
-          active ? "bg-hover" : "bg-transparent"
+          active ? 'bg-hover' : 'bg-transparent'
         }`}
       >
         <svg width="14" height="14" viewBox="0 0 14 14">

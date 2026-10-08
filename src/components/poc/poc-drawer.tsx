@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
 // POC drawer — design/PM Dashboard v3.dc.html (isPocDrawer). Opens on any page via ?poc=<id>.
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Avatar } from "@/components/hub/Avatar";
-import { Button } from "@/components/hub/Button";
-import { Select } from "@/components/hub/Select";
-import { StatusPill } from "@/components/hub/StatusPill";
-import { getPocDrawer, setFeatureLink, setProjectLink, updatePoc } from "@/lib/actions";
-import { pocAv, sortFeatures } from "@/lib/hub";
-import type { PocDrawerData } from "@/lib/poc-view";
-import { DeletePocsDialog } from "./delete-pocs-dialog";
-import { closePoc, openFeatureFromPoc } from "./url";
+import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Avatar } from '@/components/hub/Avatar';
+import { Button } from '@/components/hub/Button';
+import { Select } from '@/components/hub/Select';
+import { StatusPill } from '@/components/hub/StatusPill';
+import { getPocDrawer, setFeatureLink, setProjectLink, updatePoc } from '@/lib/actions';
+import { pocAv, sortFeatures } from '@/lib/hub';
+import type { PocDrawerData } from '@/lib/poc-view';
+import { DeletePocsDialog } from './delete-pocs-dialog';
+import { closePoc, openFeatureFromPoc } from './url';
 
-const sectionLabel = "text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase";
+const sectionLabel = 'text-[11.5px] font-semibold tracking-[0.05em] text-faint uppercase';
 const inlineInput =
-  "-ml-[7px] min-w-0 rounded-[5px] border border-transparent bg-transparent px-1.5 py-[3px] text-[13px] outline-none hover:border-border-strong focus:border-fainter focus:bg-surface";
+  '-ml-[7px] min-w-0 rounded-[5px] border border-transparent bg-transparent px-1.5 py-[3px] text-[13px] outline-none hover:border-border-strong focus:border-fainter focus:bg-surface';
 const listRow =
-  "flex cursor-pointer items-center gap-2.5 border-b border-border-subtle py-2 pr-2 pl-3 hover:bg-surface-hover";
+  'flex cursor-pointer items-center gap-2.5 border-b border-border-subtle py-2 pr-2 pl-3 hover:bg-surface-hover';
 const removeBtn =
-  "size-[18px] shrink-0 cursor-pointer rounded-full border-0 bg-transparent p-0 text-[13px] leading-none text-fainter hover:bg-hover hover:text-ink";
+  'size-[18px] shrink-0 cursor-pointer rounded-full border-0 bg-transparent p-0 text-[13px] leading-none text-fainter hover:bg-hover hover:text-ink';
 
-type Field = "name" | "org" | "role" | "email";
+type Field = 'name' | 'org' | 'role' | 'email';
 
 export function PocDrawerHost() {
-  const id = useSearchParams().get("poc");
+  const id = useSearchParams().get('poc');
   const [data, setData] = useState<PocDrawerData | null>(null);
 
   const load = useCallback(async (pid: string) => {
@@ -59,10 +59,10 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !deleting) closePoc();
+      if (e.key === 'Escape' && !deleting) closePoc();
     };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
   }, [deleting]);
 
   const run = (fn: () => Promise<unknown>) =>
@@ -72,7 +72,7 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
     });
   const saveField = (key: Field) => {
     const value = drafts[key];
-    if (value === undefined || value === (c[key] ?? "")) return setDrafts((d) => ({ ...d, [key]: undefined }));
+    if (value === undefined || value === (c[key] ?? '')) return setDrafts((d) => ({ ...d, [key]: undefined }));
     run(async () => {
       // A blank name is rejected by the action; the field then shows the saved name again.
       await updatePoc(c.id, { [key]: value });
@@ -80,14 +80,14 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
     });
   };
   const field = (key: Field) => ({
-    value: drafts[key] ?? c[key] ?? "",
+    value: drafts[key] ?? c[key] ?? '',
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => setDrafts((d) => ({ ...d, [key]: e.target.value })),
     onBlur: () => saveField(key),
   });
 
   const linkedProjects = new Set(c.projects.map((p) => p.id));
   const linkedFeatures = new Set(c.features.map((f) => f.id));
-  const open = c.features.filter((f) => f.status !== "Completed").length;
+  const open = c.features.filter((f) => f.status !== 'Completed').length;
 
   return (
     <>
@@ -109,18 +109,18 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
           <div className="flex items-center gap-3">
             <Avatar av={pocAv(c)} size={40} square />
             <input
-              {...field("name")}
+              {...field('name')}
               className="min-w-0 flex-1 rounded-[5px] border-0 bg-transparent px-1.5 py-1 text-[19px] font-semibold tracking-[-0.015em] outline-none hover:bg-[#f6f6f3] focus:bg-[#f6f6f3]"
             />
           </div>
 
           <div className="grid grid-cols-[110px_minmax(0,1fr)] items-center gap-y-2 text-[13px]">
             <span className="text-faint">Organization</span>
-            <input {...field("org")} placeholder="Add organization" className={inlineInput} />
+            <input {...field('org')} placeholder="Add organization" className={inlineInput} />
             <span className="text-faint">Role</span>
-            <input {...field("role")} placeholder="Add role" className={inlineInput} />
+            <input {...field('role')} placeholder="Add role" className={inlineInput} />
             <span className="text-faint">Email</span>
-            <input {...field("email")} placeholder="Add email" className={inlineInput} />
+            <input {...field('email')} placeholder="Add email" className={inlineInput} />
           </div>
 
           <div>
@@ -132,14 +132,14 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
                 <div key={p.id} onClick={() => router.push(`/projects/${p.id}`)} className={listRow}>
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[13px] font-medium">{p.name}</div>
-                    <div className="truncate text-[12px] text-faint">{p.description ?? ""}</div>
+                    <div className="truncate text-[12px] text-faint">{p.description ?? ''}</div>
                   </div>
                   <button
                     type="button"
                     title="Remove"
                     onClick={(e) => {
                       e.stopPropagation();
-                      run(() => setProjectLink(p.id, "pocs", c.id, false));
+                      run(() => setProjectLink(p.id, 'pocs', c.id, false));
                     }}
                     className={removeBtn}
                   >
@@ -152,10 +152,10 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
                 <Select
                   value=""
                   options={[
-                    { v: "", l: "+ Link a project" },
+                    { v: '', l: '+ Link a project' },
                     ...data.projects.filter((p) => !linkedProjects.has(p.id)).map((p) => ({ v: p.id, l: p.name })),
                   ]}
-                  onChange={(e) => e.target.value && run(() => setProjectLink(e.target.value, "pocs", c.id, true))}
+                  onChange={(e) => e.target.value && run(() => setProjectLink(e.target.value, 'pocs', c.id, true))}
                   size="sm"
                   variant="dashed"
                 />
@@ -176,12 +176,12 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
                   <div className="min-w-0 flex-1">
                     <div
                       className="truncate text-[13px] font-medium"
-                      style={{ color: f.status === "Completed" ? "var(--faint)" : "var(--ink)" }}
+                      style={{ color: f.status === 'Completed' ? 'var(--faint)' : 'var(--ink)' }}
                     >
                       {f.name}
                     </div>
                     <div className="truncate text-[12px] text-faint">
-                      {f.version?.project.name ?? "No project"} → {f.version ? `Version ${f.version.num}` : "—"}
+                      {f.version?.project.name ?? 'No project'} → {f.version ? `Version ${f.version.num}` : '—'}
                     </div>
                   </div>
                   <StatusPill value={f.status} />
@@ -190,7 +190,7 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
                     title="Remove"
                     onClick={(e) => {
                       e.stopPropagation();
-                      run(() => setFeatureLink(f.id, "pocs", c.id, false));
+                      run(() => setFeatureLink(f.id, 'pocs', c.id, false));
                     }}
                     className={removeBtn}
                   >
@@ -203,10 +203,12 @@ function PocDrawer({ data, reload }: { data: PocDrawerData; reload: () => Promis
                 <Select
                   value=""
                   options={[
-                    { v: "", l: "+ Link a feature" },
-                    ...data.features.filter((f) => !linkedFeatures.has(f.id)).map((f) => ({ v: f.id, l: `${f.projectName} · ${f.name}` })),
+                    { v: '', l: '+ Link a feature' },
+                    ...data.features
+                      .filter((f) => !linkedFeatures.has(f.id))
+                      .map((f) => ({ v: f.id, l: `${f.projectName} · ${f.name}` })),
                   ]}
-                  onChange={(e) => e.target.value && run(() => setFeatureLink(e.target.value, "pocs", c.id, true))}
+                  onChange={(e) => e.target.value && run(() => setFeatureLink(e.target.value, 'pocs', c.id, true))}
                   size="sm"
                   variant="dashed"
                 />

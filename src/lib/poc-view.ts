@@ -1,5 +1,5 @@
-import "server-only";
-import { getPoc, listFeatures, listProjectOptions, type PocRow } from "./queries";
+import 'server-only';
+import { getPoc, listFeatures, listProjectOptions, type PocRow } from './queries';
 
 /** Everything the POC drawer shows (design/PM Dashboard v3.dc.html, isPocDrawer). */
 export type PocDrawerData = {
@@ -18,6 +18,6 @@ export async function loadPocDrawer(id: string): Promise<PocDrawerData | null> {
   return {
     poc,
     projects: projects.map((p) => ({ id: p.id, name: p.name, description: null })),
-    features: features.map((f) => ({ id: f.id, name: f.name, projectName: f.version?.project.name ?? "No project" })),
+    features: features.map((f) => ({ id: f.id, name: f.name, projectName: f.version?.project.name ?? 'No project' })),
   };
 }
