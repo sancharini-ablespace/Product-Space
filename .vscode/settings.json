@@ -1,0 +1,100 @@
+{
+  // Prettier reads .prettierrc.json and .prettierignore (design/, supabase/, *.md stay unformatted),
+  // so no prettier.* overrides here — they would drift from what `npm run format` does.
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.rulers": [120],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  // ESLint owns import style (inline type imports), so organize/sort imports are left off; they
+  // would rewrite what the lint rule just fixed.
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // TypeScript 6.0 is pinned (typescript-eslint 8 peers <6.1); use it, not the one bundled with VS Code.
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.preferences.preferTypeOnlyAutoImports": true,
+  "js/ts.tsserver.automaticTypeAcquisition.enabled": false,
+  "js/ts.experimental.useTsgo": false,
+
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // Tailwind v4 has no tailwind.config; the theme is the @theme block in globals.css.
+  "tailwindCSS.experimental.configFile": "src/app/globals.css",
+  "tailwindCSS.classFunctions": ["cn", "cva"],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+
+  // .next holds build output only; next-env.d.ts and *.tsbuildinfo are generated.
+  "files.watcherExclude": {
+    "**/.next/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/package-lock.json": true,
+    "**/*.tsbuildinfo": true
+  },
+  "files.readonlyInclude": {
+    "next-env.d.ts": true
+  },
+
+  // Window chrome in violet, so this repo is told apart from the AbleSpace monorepo's blue window.
+  // Debug sessions turn the status bar amber. `peacock.color` keeps the Peacock extension in sync.
+  "peacock.color": "#4c1d95",
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#4c1d95",
+    "titleBar.activeForeground": "#f5f3ff",
+    "titleBar.inactiveBackground": "#4c1d9599",
+    "titleBar.inactiveForeground": "#f5f3ff99",
+    "titleBar.border": "#2e1065",
+    "activityBar.background": "#2e1065",
+    "activityBar.foreground": "#f5f3ff",
+    "activityBar.inactiveForeground": "#f5f3ff66",
+    "activityBar.activeBorder": "#a78bfa",
+    "activityBar.activeBackground": "#6d28d933",
+    "activityBarBadge.background": "#8b5cf6",
+    "activityBarBadge.foreground": "#ffffff",
+    "statusBar.background": "#6d28d9",
+    "statusBar.foreground": "#f5f3ff",
+    "statusBar.border": "#4c1d95",
+    "statusBarItem.hoverBackground": "#8b5cf6",
+    "statusBarItem.remoteBackground": "#8b5cf6",
+    "statusBarItem.remoteForeground": "#ffffff",
+    "statusBar.debuggingBackground": "#b5541f",
+    "statusBar.debuggingForeground": "#ffffff",
+    "statusBar.noFolderBackground": "#2e1065",
+    "commandCenter.border": "#a78bfa99",
+    "sash.hoverBorder": "#a78bfa"
+  },
+
+  "cSpell.words": ["ablespace", "bcryptjs", "cmdk", "nextjs", "PostgREST", "shadcn", "supabase", "typegen"]
+}

@@ -1,0 +1,11 @@
+{
+  // What settings.json assumes is installed.
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "streetsidesoftware.code-spell-checker"
+  ],
+  // Biome would fight Prettier + ESLint, which this repo uses.
+  "unwantedRecommendations": ["biomejs.biome"]
+}
