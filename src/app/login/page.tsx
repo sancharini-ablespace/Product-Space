@@ -16,8 +16,17 @@ function safePath(value: string | string[] | undefined) {
   }
 }
 
+/** Auth.js sends its own failures here as ?error=<type> (pages.error in src/auth.ts). */
+function errorMessage(type: string | string[] | undefined) {
+  if (!type) return undefined;
+  return type === 'CredentialsSignin'
+    ? 'Incorrect email or password.'
+    : 'Sign-in failed. Try again, or ask a teammate if it keeps happening.';
+}
+
 export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
-  const target = safePath((await searchParams).callbackUrl);
+  const sp = await searchParams;
+  const target = safePath(sp.callbackUrl);
   if (await getCurrentUser()) redirect(target);
-  return <LoginForm callbackUrl={target} />;
+  return <LoginForm callbackUrl={target} initialError={errorMessage(sp.error)} />;
 }

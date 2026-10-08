@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcryptjs';
 import { revalidatePath } from 'next/cache';
+import { signIn } from '@/auth';
 import {
   allowedDomain,
   findAccount,
@@ -849,6 +850,8 @@ export async function changePassword(input: { current: string; next: string; con
         .update({ password_hash: await hashPassword(next), password_changed_at: new Date().toISOString() })
         .eq('id', me.id),
     );
+    // The change ends every session issued before it, this one included; issue a fresh one.
+    await signIn('credentials', { email: me.email, password: next, redirect: false });
   });
 }
 
@@ -884,6 +887,12 @@ export async function resetPassword(id: string) {
   return run(async (me) => {
     const uid = uuid(id, 'person');
     if (uid === me.id) throw new ValidationError('Change your own password on the Security tab.');
-    unwrap(await db().from('users').update({ password_hash: null }).eq('id', uid).not('password_hash', 'is', null));
+    unwrap(
+      await db()
+        .from('users')
+        .update({ password_hash: null, password_changed_at: new Date().toISOString() })
+        .eq('id', uid)
+        .not('password_hash', 'is', null),
+    );
   });
 }

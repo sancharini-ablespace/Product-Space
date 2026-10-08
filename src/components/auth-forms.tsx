@@ -61,7 +61,7 @@ const footerLink = 'text-muted underline underline-offset-2 hover:text-ink';
 
 // The email (and name) fields are controlled: React resets uncontrolled form fields after a
 // form action runs, which would wipe them after a failed attempt.
-export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
+export function LoginForm({ callbackUrl, initialError }: { callbackUrl: string; initialError: string | undefined }) {
   const [state, action, pending] = useActionState(signInWithPassword, undefined);
   const [email, setEmail] = useState('');
   return (
@@ -90,7 +90,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
           onChange={(e) => setEmail(e.target.value)}
         />
         <Field label="Password" name="password" type="password" autoComplete="current-password" required />
-        <ErrorText message={state?.error} />
+        <ErrorText message={state ? state.error : initialError} />
         <div className="flex justify-end">
           <Button type="submit" variant="primary" label={pending ? 'Signing in…' : 'Sign in'} disabled={pending} />
         </div>

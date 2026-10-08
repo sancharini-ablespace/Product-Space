@@ -65,6 +65,7 @@ export async function setUpAccount(_: FormState, fd: FormData): Promise<FormStat
   const fields = {
     name,
     password_hash: await hashPassword(password),
+    password_changed_at: new Date().toISOString(),
     ...(firstSetup ? { activated_at: new Date().toISOString() } : {}),
     ...(firstSetup && account?.invite_role ? { role_title: account.invite_role } : {}),
   };

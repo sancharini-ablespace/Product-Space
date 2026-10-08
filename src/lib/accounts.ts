@@ -44,6 +44,7 @@ interface AccountRow {
   name: string | null;
   image: string | null;
   password_hash: string | null;
+  password_changed_at: string | null;
   invite_role: string | null;
   activated_at: string | null;
 }
@@ -51,7 +52,7 @@ interface AccountRow {
 export async function findAccount(email: string): Promise<AccountRow | null> {
   const { data, error } = await db()
     .from('users')
-    .select('id, email, name, image, password_hash, invite_role, activated_at')
+    .select('id, email, name, image, password_hash, password_changed_at, invite_role, activated_at')
     .eq('email', normalizeEmail(email))
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -63,5 +64,6 @@ export async function verifyCredentials(email: string, password: string) {
   const account = isAllowedEmail(email) ? await findAccount(email) : null;
   const ok = await bcrypt.compare(password, account?.password_hash ?? DUMMY_HASH);
   if (!account?.password_hash || !ok) return null;
-  return { id: account.id, email: account.email, name: account.name, image: account.image };
+  const { id, name, image, password_changed_at: pwdAt } = account;
+  return { id, email: account.email, name, image, pwdAt };
 }
